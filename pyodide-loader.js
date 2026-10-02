@@ -162,7 +162,7 @@ def tampil(expr):
             return latex(expr)
         except Exception:
             return str(expr)
-
+            
 def tampil_deret(expr):
     try:
         hasil = latex(expr)
