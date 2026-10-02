@@ -125,9 +125,11 @@ def tampil_matriks(M):
 
 def tampil(expr):
     try:
-        from sympy import Set, Interval, Union, Intersection, FiniteSet, EmptySet, Matrix
+        from sympy import Set, Interval, Union, Intersection, FiniteSet, EmptySet, Matrix, Number
+        # Matriks: tampilkan matriks
         if isinstance(expr, Matrix):
             return tampil_matriks(expr)
+        # Himpunan: tampilkan interval
         if isinstance(expr, (Set, Interval, Union, Intersection, FiniteSet, EmptySet)):
             hasil = latex(expr)
             return format_interval_latex(hasil)
@@ -136,17 +138,23 @@ def tampil(expr):
         if expr is S.EmptySet:
             return latex(expr)
 
+        # Ekspresi dengan variabel: tampilkan simbolik saja
         if hasattr(expr, 'free_symbols') and len(expr.free_symbols) > 0:
             return latex(expr)
+
+        # Ekspresi tanpa variabel: tampilkan eksak + desimal (jika beda)
         eksak = latex(expr)
+        # Jika bilangan bulat atau rasional, tampilkan eksak saja
         if expr.is_Integer or expr.is_Rational:
             return eksak
+        # Coba konversi ke desimal
         try:
-            desimal = N(expr, 6)
-            if str(expr) == str(desimal):
-                return eksak
-            desimal_latex = latex(desimal).replace('.', ',')
-            return eksak + " " + BS + "approx " + desimal_latex
+            desimal = N(expr, 10)
+            # Jika hasil desimal berbeda dari eksak, tampilkan keduanya
+            if str(expr) != str(desimal):
+                desimal_latex = latex(desimal).replace('.', ',')
+                return eksak + " " + BS + "approx " + desimal_latex
+            return eksak
         except Exception:
             return eksak
     except Exception:
