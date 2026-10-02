@@ -1,0 +1,102 @@
+/* Kalkulator Matematika — CSS */
+#kalkulator-matematika {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-family: sans-serif;
+  margin: 20px auto;
+  max-width: 900px;
+  padding: 25px;
+}
+
+.km-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.km-header h3 {
+  font-size: 22px;
+  margin: 0;
+}
+
+#km-status {
+  color: #666;
+  font-size: 13px;
+  margin-left: auto;
+}
+
+#km-input {
+  border-radius: 6px;
+  border: 2px solid #ddd;
+  box-sizing: border-box;
+  font-size: 16px;
+  margin-bottom: 10px;
+  padding: 14px;
+  width: 100%;
+}
+
+#km-btn {
+  background: #1a73e8;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 14px;
+  width: 100%;
+}
+
+#km-btn:hover {
+  background: #1557b0;
+}
+
+#km-output {
+  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 18px;
+  margin-top: 15px;
+  min-height: 50px;
+  overflow-x: auto;
+  padding: 20px;
+}
+
+.km-daftar-wrapper {
+  border-top: 1px solid #e0e0e0;
+  margin-top: 25px;
+  padding-top: 20px;
+}
+
+.km-daftar-title {
+  color: #000;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+#km-cari {
+  border-radius: 6px;
+  border: 2px solid #ddd;
+  box-sizing: border-box;
+  color: #000;
+  font-size: 14px;
+  margin-bottom: 14px;
+  padding: 12px;
+  width: 100%;
+}
+
+#km-kategori {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#km-daftar {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  max-height: 520px;
+  overflow-y: auto;
+}
