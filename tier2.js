@@ -263,6 +263,48 @@ function jalankanPerintah(q, out) {
       arr = arr.replace(/\s+/g, '');
       cmd += "print(tampil(sp.diag(*" + arr + ")))";
     }
+    else if (lower.startsWith("jumlah matriks")) {
+  var rest = q.replace(/^jumlah matriks\s*/i, "").trim();
+  var parts = rest.split(";").map(function(s){return s.trim();});
+  // Gabungkan kembali dengan titik koma untuk parsing matriks
+  var matStr = rest.replace(/;/g, ',');
+  // Pisahkan dua matriks berdasarkan '] ; ['
+  var match = rest.match(/\[\[.*?\]\]/g);
+  if (!match || match.length < 2) { out.innerHTML = "Format: jumlah matriks [[a;b];[c;d]] ; [[e;f];[g;h]]"; return; }
+  var A = match[0].replace(/;/g, ',');
+  var B = match[1].replace(/;/g, ',');
+  cmd += "print(tampil(sp.Matrix(" + A + ") + sp.Matrix(" + B + ")))";
+}
+else if (lower.startsWith("kurang matriks")) {
+  var rest = q.replace(/^kurang matriks\s*/i, "").trim();
+  var match = rest.match(/\[\[.*?\]\]/g);
+  if (!match || match.length < 2) { out.innerHTML = "Format: kurang matriks [[a;b];[c;d]] ; [[e;f];[g;h]]"; return; }
+  var A = match[0].replace(/;/g, ',');
+  var B = match[1].replace(/;/g, ',');
+  cmd += "print(tampil(sp.Matrix(" + A + ") - sp.Matrix(" + B + ")))";
+}
+else if (lower.startsWith("kali matriks")) {
+  var rest = q.replace(/^kali matriks\s*/i, "").trim();
+  var match = rest.match(/\[\[.*?\]\]/g);
+  if (!match || match.length < 2) { out.innerHTML = "Format: kali matriks [[a;b];[c;d]] ; [[e;f];[g;h]]"; return; }
+  var A = match[0].replace(/;/g, ',');
+  var B = match[1].replace(/;/g, ',');
+  cmd += "print(tampil(sp.Matrix(" + A + ") * sp.Matrix(" + B + ")))";
+}
+else if (lower.startsWith("invers matriks")) {
+  var rest = q.replace(/^invers matriks\s*/i, "").trim();
+  var match = rest.match(/\[\[.*?\]\]/g);
+  if (!match || match.length < 1) { out.innerHTML = "Format: invers matriks [[a;b];[c;d]]"; return; }
+  var A = match[0].replace(/;/g, ',');
+  cmd += "print(tampil(sp.Matrix(" + A + ").inv()))";
+}
+else if (lower.startsWith("transpos matriks")) {
+  var rest = q.replace(/^transpos matriks\s*/i, "").trim();
+  var match = rest.match(/\[\[.*?\]\]/g);
+  if (!match || match.length < 1) { out.innerHTML = "Format: transpos matriks [[a;b;c];[d;e;f]]"; return; }
+  var A = match[0].replace(/;/g, ',');
+  cmd += "print(tampil(sp.Matrix(" + A + ").T))";
+}
     else if (lower.startsWith("matriks gell-mann")) {
       var num = q.replace(/^matriks gell-mann\s*/i, "").trim();
       cmd += "print(tampil(matriks_gell_mann(" + num + ")))";

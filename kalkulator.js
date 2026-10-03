@@ -59,6 +59,12 @@ var daftarPerintah = [
   { kategori: "Barisan & Deret", nama: "Deret tak hingga", format: "deret takhingga <rumus>; n", contoh: "deret takhingga 1/n^2; n", ket: "Menjumlahkan deret tak hingga (pemisah: titik koma)." },
 
   { kategori: "Matriks", nama: "Determinan", format: "determinan [[a;b];[c;d]]", contoh: "determinan [[1;2];[3;4]]", ket: "Determinan matriks (pemisah elemen: titik koma)." },
+  { kategori: "Matriks", nama: "Jumlah matriks", format: "jumlah matriks [[a;b];[c;d]] ; [[e;f];[g;h]]", contoh: "jumlah matriks [[1;2];[3;4]] ; [[5;6];[7;8]]", ket: "Menjumlahkan dua matriks (dimensi harus sama)." },
+{ kategori: "Matriks", nama: "Kurang matriks", format: "kurang matriks [[a;b];[c;d]] ; [[e;f];[g;h]]", contoh: "kurang matriks [[5;6];[7;8]] ; [[1;2];[3;4]]", ket: "Mengurangkan dua matriks (dimensi harus sama)." },
+{ kategori: "Matriks", nama: "Kali matriks", format: "kali matriks [[a;b];[c;d]] ; [[e;f];[g;h]]", contoh: "kali matriks [[1;2];[3;4]] ; [[5;6];[7;8]]", ket: "Mengalikan dua matriks (kolom A = baris B)." },
+{ kategori: "Matriks", nama: "Invers matriks", format: "invers matriks [[a;b];[c;d]]", contoh: "invers matriks [[1;2];[3;4]]", ket: "Invers matriks persegi (determinan ≠ 0)." },
+{ kategori: "Matriks", nama: "Transpos matriks", format: "transpos matriks [[a;b;c];[d;e;f]]", contoh: "transpos matriks [[1;2;3];[4;5;6]]", ket: "Transpos matriks (tukar baris & kolom)." },
+
   { kategori: "Matriks", nama: "Matriks diagonal", format: "matriks diagonal [a;b;c]", contoh: "matriks diagonal [1;2;3]", ket: "Matriks diagonal (pemisah: titik koma)." },
   { kategori: "Matriks", nama: "Matriks Gell-Mann", format: "matriks Gell-Mann n", contoh: "matriks Gell-Mann 1", ket: "Gell-Mann Matrix." },
 
