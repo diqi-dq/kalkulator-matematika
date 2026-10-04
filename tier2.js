@@ -8,8 +8,8 @@
    - pyodide-loader.js (muatPyodide, py, siap, sedangMemuat)
    ======================================================== */
 
-function jalankanPerintah(q, out) {
-  out.innerHTML = "<em>Menghitung...</em>";
+function jalankanPerintah(q, out, inputAsli) {
+    out.innerHTML = "<em>Menghitung...</em>";
 
   q = q.replace(/\^/g, "**");
   var lower = q.toLowerCase();
@@ -487,6 +487,10 @@ function jalankanPerintah(q, out) {
       }
     };
     cobaRender(0);
+    // Setelah render, tambahkan visual otomatis
+    setTimeout(function() {
+      tambahVisualOtomatis(inputAsli || q, out);
+    }, 100);
   }).catch(function(e) {
     clearTimeout(timeoutId);
     out.innerHTML = '<span style="color:#ea4335">Kesalahan: ' + escapeHtml(e.message) + '</span>\n\n' +
@@ -507,21 +511,230 @@ window.kmJalankan = function() {
   // Konversi koma desimal ke titik (input Indonesia)
   q = konversiKomaDesimal(q);
 
+  // Simpan input asli untuk ekstrak ekspresi
+  var inputAsli = q;
+
   // Tier 1: Vanilla JS (instan)
-  if (jalankanTier1(q, out)) return;
+  if (jalankanTier1(q, out)) {
+    tambahVisualOtomatis(inputAsli, out);
+    return;
+  }
 
   // Tier 1: Statistik (instan)
-  if (typeof jalankanStatistik === 'function' && jalankanStatistik(q, out)) return;
+  if (typeof jalankanStatistik === 'function' && jalankanStatistik(q, out)) {
+    tambahVisualOtomatis(inputAsli, out);
+    return;
+  }
 
   // Tier 2: Pyodide (simbolik)
   if (!siap) {
     out.innerHTML = '<em>Memuat mesin simbolik... Mohon tunggu.</em>';
     muatPyodide().then(function() {
-      jalankanPerintah(q, out);
+      jalankanPerintah(q, out, inputAsli);
     }).catch(function(err) {
       out.innerHTML = '<span style="color:#ea4335">Gagal memuat: ' + escapeHtml(err.message) + '</span>';
     });
     return;
   }
-  jalankanPerintah(q, out);
+  jalankanPerintah(q, out, inputAsli);
 };
+
+/* ========================================================
+   VISUAL OTOMATIS
+   Menambahkan grafik otomatis untuk perintah tertentu.
+   ======================================================== */
+
+function tambahVisualOtomatis(q, out) {
+  var lower = q.toLowerCase();
+
+  // Perintah yang layak diberi visual
+  var perintahVisual = [
+    "sinus", "kosinus", "tangen", "kosekan", "sekan", "kotangen",
+    "arcsinus", "arckosinus", "arcktangen",
+    "sinus hiperbolik", "kosinus hiperbolik", "tangen hiperbolik",
+    "integral", "turunan", "turunan2", "turunan kedua",
+    "limit",
+    "sederhanakan", "faktorkan", "jabarkan",
+    "pecahkan"
+  ];
+
+  var layak = false;
+  for (var i = 0; i < perintahVisual.length; i++) {
+    if (lower.startsWith(perintahVisual[i])) {
+      layak = true;
+      break;
+    }
+  }
+  if (!layak) return;
+
+  // Ekstrak ekspresi
+  var ekspresi = ekstrakEkspresi(q);
+  if (!ekspresi) return;
+
+  // Cek library
+  if (typeof functionPlot === 'undefined') return;
+
+  // Tambahkan container grafik
+  var plotDiv = document.createElement('div');
+  plotDiv.id = 'km-plot';
+  plotDiv.style = 'width:100%; height:300px; margin-top:15px; border:1px solid #e0e0e0; border-radius:6px; background:#fff;';
+  out.appendChild(plotDiv);
+
+  // Tentukan domain
+  var domain = tentukanDomain(ekspresi);
+
+  // Render grafik
+  try {
+    functionPlot({
+      target: '#km-plot',
+      width: out.clientWidth - 42,
+      height: 300,
+      grid: true,
+      xAxis: { domain: domain },
+      data: [{ fn: ekspresi, color: '#1a73e8', graphType: 'polyline' }]
+    });
+  } catch (e) {
+    console.warn('Gagal render grafik:', e);
+    plotDiv.innerHTML = '<div style="padding:10px; color:#666; font-size:13px;">Grafik tidak dapat ditampilkan.</div>';
+  }
+}
+
+function ekstrakEkspresi(q) {
+  var lower = q.toLowerCase();
+  var ekspresi = "";
+
+  // Trigonometri
+  if (lower.startsWith("sinus hiperbolik")) {
+    var e = q.replace(/^sinus hiperbolik\s*/i, "").trim();
+    ekspresi = "sinh(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("kosinus hiperbolik")) {
+    var e = q.replace(/^kosinus hiperbolik\s*/i, "").trim();
+    ekspresi = "cosh(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("tangen hiperbolik")) {
+    var e = q.replace(/^tangen hiperbolik\s*/i, "").trim();
+    ekspresi = "tanh(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("arcsinus")) {
+    var e = q.replace(/^arcsinus\s*/i, "").trim();
+    ekspresi = "asin(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("arckosinus")) {
+    var e = q.replace(/^arckosinus\s*/i, "").trim();
+    ekspresi = "acos(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("arcktangen")) {
+    var e = q.replace(/^arcktangen\s*/i, "").trim();
+    ekspresi = "atan(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("sinus")) {
+    var e = q.replace(/^sinus\s*/i, "").trim();
+    // Jika argumen konstanta (mis. pi/7), tampilkan sin(x)
+    if (!/[a-zA-Z]/.test(e)) {
+      ekspresi = "sin(x)";
+    } else {
+      ekspresi = "sin(" + sisipKaliImplisit(e) + ")";
+    }
+  } else if (lower.startsWith("kosinus")) {
+    var e = q.replace(/^kosinus\s*/i, "").trim();
+    if (!/[a-zA-Z]/.test(e)) {
+      ekspresi = "cos(x)";
+    } else {
+      ekspresi = "cos(" + sisipKaliImplisit(e) + ")";
+    }
+  } else if (lower.startsWith("tangen")) {
+    var e = q.replace(/^tangen\s*/i, "").trim();
+    if (!/[a-zA-Z]/.test(e)) {
+      ekspresi = "tan(x)";
+    } else {
+      ekspresi = "tan(" + sisipKaliImplisit(e) + ")";
+    }
+  } else if (lower.startsWith("kosekan")) {
+    var e = q.replace(/^kosekan\s*/i, "").trim();
+    ekspresi = "1/sin(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("sekan")) {
+    var e = q.replace(/^sekan\s*/i, "").trim();
+    ekspresi = "1/cos(" + sisipKaliImplisit(e) + ")";
+  } else if (lower.startsWith("kotangen")) {
+    var e = q.replace(/^kotangen\s*/i, "").trim();
+    ekspresi = "1/tan(" + sisipKaliImplisit(e) + ")";
+  }
+  // Kalkulus
+  else if (lower.startsWith("integral")) {
+    var rest = q.replace(/^integral\s*/i, "").trim();
+    // Ambil ekspresi sebelum ';'
+    var ekspresiPart = rest.split(";")[0].trim();
+    ekspresi = sisipKaliImplisit(ekspresiPart);
+  } else if (lower.startsWith("turunan2") || lower.startsWith("turunan kedua")) {
+    var rest = q.replace(/^(turunan2|turunan kedua)\s*/i, "").trim();
+    ekspresi = sisipKaliImplisit(rest);
+  } else if (lower.startsWith("turunan")) {
+    var rest = q.replace(/^turunan\s*/i, "").trim();
+    ekspresi = sisipKaliImplisit(rest);
+  } else if (lower.startsWith("limit")) {
+    var rest = q.replace(/^limit\s*/i, "").trim();
+    var arrowMatch = rest.match(/([a-zA-Z])\s*->/);
+    if (arrowMatch) {
+      var ekspresiPart = rest.substring(0, rest.indexOf(arrowMatch[0])).replace(/[;,]\s*$/, "").trim();
+      ekspresi = sisipKaliImplisit(ekspresiPart);
+    }
+  }
+  // Aljabar
+  else if (lower.startsWith("sederhanakan")) {
+    var rest = q.replace(/^sederhanakan\s*/i, "").trim();
+    ekspresi = sisipKaliImplisit(rest);
+  } else if (lower.startsWith("faktorkan")) {
+    var rest = q.replace(/^faktorkan\s*/i, "").trim();
+    ekspresi = sisipKaliImplisit(rest);
+  } else if (lower.startsWith("jabarkan")) {
+    var rest = q.replace(/^jabarkan\s*/i, "").trim();
+    ekspresi = sisipKaliImplisit(rest);
+  } else if (lower.startsWith("pecahkan")) {
+    var rest = q.replace(/^pecahkan\s*/i, "").trim();
+    // Ambil persamaan pertama
+    var pers = rest.split(";")[0].trim();
+    if (pers.indexOf("=") !== -1) {
+      var parts = pers.split("=");
+      ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")-(" + sisipKaliImplisit(parts[1]) + ")";
+    } else {
+      ekspresi = sisipKaliImplisit(pers);
+    }
+  }
+
+  // Bersihkan ekspresi untuk Function Plot
+  if (ekspresi) {
+    // Ganti ** dengan ^
+    ekspresi = ekspresi.replace(/\*\*/g, "^");
+    // Ganti E^ dengan exp(
+    ekspresi = ekspresi.replace(/\bE\^/g, "exp(");
+    // Ganti pi dengan PI
+    ekspresi = ekspresi.replace(/\bpi\b/gi, "PI");
+    // Ganti oo dengan Infinity
+    ekspresi = ekspresi.replace(/\boo\b/g, "Infinity");
+  }
+
+  return ekspresi || null;
+}
+
+function tentukanDomain(ekspresi) {
+  // Default domain
+  var domain = [-10, 10];
+
+  // Deteksi fungsi trigonometri → domain [-2π, 2π]
+  if (/\b(sin|cos|tan|cot|sec|csc|sinh|cosh|tanh)\b/.test(ekspresi)) {
+    domain = [-6.28, 6.28];
+  }
+  // Deteksi logaritma → domain [0.1, 10]
+  else if (/\blog\b|\bln\b/.test(ekspresi)) {
+    domain = [0.1, 10];
+  }
+  // Deteksi akar → domain [0, 10]
+  else if (/\bsqrt\b/.test(ekspresi)) {
+    domain = [0, 10];
+  }
+  // Deteksi eksponensial → domain [-3, 3]
+  else if (/\bexp\b/.test(ekspresi)) {
+    domain = [-3, 3];
+  }
+  // Deteksi polinomial pangkat tinggi → domain [-5, 5]
+  else if (/\^[3-9]/.test(ekspresi)) {
+    domain = [-5, 5];
+  }
+
+  return domain;
+}
