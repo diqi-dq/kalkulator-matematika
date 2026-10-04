@@ -43,6 +43,12 @@ var daftarPerintah = [
   { kategori: "Aljabar", nama: "Faktor bilangan", format: "faktor <bilangan bulat>", contoh: "faktor 12", ket: "Faktorisasi bilangan bulat." },
   { kategori: "Aljabar", nama: "Jabarkan", format: "jabarkan <ekspresi>", contoh: "jabarkan (x+1)^3", ket: "Menjabarkan ekspresi." },
   { kategori: "Aljabar", nama: "Sederhanakan", format: "sederhanakan <ekspresi>", contoh: "sederhanakan x^2-8x+16", ket: "Menyederhanakan ekspresi ke bentuk paling sederhana." },
+  { kategori: "Aljabar", nama: "Jumlah fungsi", format: "jumlah fungsi <f> ; <g> [; <h> ...]", contoh: "jumlah fungsi x^2 ; 2x+1", ket: "(f+g)(x) = f(x) + g(x)" },
+  { kategori: "Aljabar", nama: "Kurang fungsi", format: "kurang fungsi <f> ; <g> [; <h> ...]", contoh: "kurang fungsi x^2 ; 2x+1", ket: "(f-g)(x) = f(x) - g(x)" },
+  { kategori: "Aljabar", nama: "Kali fungsi", format: "kali fungsi <f> ; <g> [; <h> ...]", contoh: "kali fungsi x^2 ; 2x+1", ket: "(f×g)(x) = f(x) × g(x)" },
+  { kategori: "Aljabar", nama: "Bagi fungsi", format: "bagi fungsi <f> ; <g> [; <h> ...]", contoh: "bagi fungsi x^2 ; x-1", ket: "(f÷g)(x) = f(x) / g(x), g(x) ≠ 0" },
+  { kategori: "Aljabar", nama: "Komposisi fungsi", format: "komposisi fungsi <f> ; <g> [; <h> ...]", contoh: "komposisi fungsi x^2 ; 2x+1", ket: "(f∘g)(x) = f(g(x))" },
+  { kategori: "Aljabar", nama: "Komposisi balik", format: "komposisi balik <f> ; <g>", contoh: "komposisi balik x^2 ; 2x+1", ket: "(g∘f)(x) = g(f(x))" },
 
   { kategori: "Kalkulus", nama: "Integral tak tentu", format: "integral <ekspresi>", contoh: "integral x^2", ket: "Menghitung antiturunan." },
   { kategori: "Kalkulus", nama: "Integral tentu", format: "integral <ekspresi>; x; a; b", contoh: "integral x^2; x; 0; 1", ket: "Menghitung integral tentu (pemisah: titik koma)." },
@@ -113,7 +119,7 @@ var daftarPerintah = [
   { kategori: "Statistik", nama: "Ukuran sampel", format: "ukuran sampel <margin>; <std>; <tingkat>", contoh: "ukuran sampel 5; 15; 0,95", ket: "Ukuran sampel minimum." },
   { kategori: "Statistik", nama: "Margin kesalahan", format: "margin kesalahan <std>; <n>; <tingkat>", contoh: "margin kesalahan 15; 30; 0,95", ket: "Margin of error." },
   { kategori: "Statistik", nama: "Regresi linier", format: "regresi linier <x> ; <y>", contoh: "regresi linier 1,2,3,4,5 ; 2,4,5,4,5", ket: "Regresi linier sederhana (OLS)." },
-  { kategori: "Statistik", nama: "Distribusi Beta", format: "distribusi beta <x>; <alpha>; <beta>", contoh: "distribusi beta 0,5; 2; 3", ket: "PDF distribusi Beta (butuh Pyodide)." }
+  { kategori: "Statistik", nama: "Distribusi Beta", format: "distribusi beta <x>; <alpha>; <beta>", contoh: "distribusi beta 0,5; 2; 3", ket: "PDF distribusi Beta." }
 ];
 
 // ========================================================
