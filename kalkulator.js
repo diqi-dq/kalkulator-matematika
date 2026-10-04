@@ -78,7 +78,7 @@ var daftarPerintah = [
   { kategori: "Bilangan", nama: "Desimal", format: "desimal <ekspresi>", contoh: "desimal 1/3", ket: "Konversi ke desimal." },
   { kategori: "Bilangan", nama: "Biner", format: "biner <bilangan bulat>", contoh: "biner 10", ket: "Konversi ke biner." },
 
-  { kategori: "Trigonometri", nama: "Sinus", format: "sinus <sudut>", contoh: "sinus pi/6", ket: "sin(x)." },
+  { kategori: "Trigonometri", nama: "Sinus", format: "sinus <sudut>", contoh: "sinus pi/6", ket: "sin(x).", visual: true },
   { kategori: "Trigonometri", nama: "Kosinus", format: "kosinus <sudut>", contoh: "kosinus pi/3", ket: "cos(x)." },
   { kategori: "Trigonometri", nama: "Tangen", format: "tangen <sudut>", contoh: "tangen pi/4", ket: "tan(x)." },
   { kategori: "Trigonometri", nama: "Arcsinus", format: "arcsinus <nilai>", contoh: "arcsinus 0,5", ket: "arcsin(x)." },
