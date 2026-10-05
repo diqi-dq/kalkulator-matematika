@@ -13,7 +13,7 @@ function muatPyodide() {
     }
 
     sedangMemuat = true;
-    statusEl.innerText = "Memuat mesin matematika, Harap tunggu...";
+    statusEl.innerText = "Memuat mesin matematika, Harap tunggu... ";
     statusEl.style.color = "#e67e22";
 
     var s = document.createElement('script');

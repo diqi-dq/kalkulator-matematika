@@ -573,18 +573,32 @@ function tambahVisualOtomatis(q, out) {
 
   if (typeof functionPlot === 'undefined') return;
 
+  // Buat container grafik
   var plotDiv = document.createElement('div');
   plotDiv.id = 'km-plot';
-  plotDiv.style = 'width:100%; height:400px; margin-top:15px; border:1px solid #e0e0e0; border-radius:6px; background:#fff;';
+  plotDiv.style = 'width:100%; height:400px; margin-top:15px; border:1px solid #e0e0e0; border-radius:6px 6px 0 0; background:#fff;';
   out.appendChild(plotDiv);
 
-  // Tentukan domain berdasarkan fungsi pertama
-  var domainX = tentukanDomain(dataPlot[0].fn);
-  var domainY = tentukanDomainY(dataPlot[0].fn, domainX);
-  var aspectRatio = tentukanAspectRatio(dataPlot[0].fn);
+  // Buat container legend
+  var legendDiv = document.createElement('div');
+  legendDiv.style = 'width:100%; padding:10px 15px; background:#f8f9fa; border:1px solid #e0e0e0; border-top:none; border-radius:0 0 6px 6px; font-size:13px; display:flex; flex-wrap:wrap; gap:15px;';
+  
+  var legendHTML = '';
+  dataPlot.forEach(function(d) {
+    legendHTML += '<span style="display:inline-flex; align-items:center; gap:6px;">' +
+                  '<span style="display:inline-block; width:20px; height:3px; background:' + d.color + '; border-radius:2px;"></span>' +
+                  '<span style="color:#333; font-family:Consolas, monospace;">' + (d.title || d.fn) + '</span>' +
+                  '</span>';
+  });
+  legendDiv.innerHTML = legendHTML;
+  out.appendChild(legendDiv);
 
-  var lebar = out.clientWidth - 42;
-  var tinggi = Math.min(lebar / aspectRatio, 500);
+  // Domain default
+  var domainX = [-10, 10];
+  var domainY = [-10, 10];
+
+  var lebar = out.clientWidth > 100 ? out.clientWidth - 42 : 600;
+  var tinggi = 400;
 
   try {
     functionPlot({
@@ -598,14 +612,13 @@ function tambahVisualOtomatis(q, out) {
         return {
           fn: d.fn,
           color: d.color,
-          title: d.title,
           graphType: 'polyline'
         };
       })
     });
   } catch (e) {
-    console.warn('Gagal render grafik:', e);
-    plotDiv.innerHTML = '<div style="padding:10px; color:#666; font-size:13px;">Grafik tidak dapat ditampilkan.</div>';
+    console.error('Gagal render grafik:', e);
+    plotDiv.innerHTML = '<div style="padding:10px; color:#666; font-size:13px;">Grafik tidak dapat ditampilkan: ' + e.message + '</div>';
   }
 }
 /* ========================================================
