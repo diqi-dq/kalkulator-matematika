@@ -608,6 +608,99 @@ function tambahVisualOtomatis(q, out) {
     plotDiv.innerHTML = '<div style="padding:10px; color:#666; font-size:13px;">Grafik tidak dapat ditampilkan.</div>';
   }
 }
+/* ========================================================
+   TENTUKAN DOMAIN
+   ======================================================== */
+
+function tentukanDomain(ekspresi) {
+  // Default domain
+  var domain = [-10, 10];
+
+  // Deteksi fungsi trigonometri → domain [-2π, 2π]
+  if (/\b(sin|cos|tan|cot|sec|csc|sinh|cosh|tanh)\b/.test(ekspresi)) {
+    domain = [-6.28, 6.28];
+  }
+  // Deteksi logaritma → domain [0.1, 10]
+  else if (/\blog\b|\bln\b/.test(ekspresi)) {
+    domain = [0.1, 10];
+  }
+  // Deteksi akar → domain [0, 10]
+  else if (/\bsqrt\b/.test(ekspresi)) {
+    domain = [0, 10];
+  }
+  // Deteksi eksponensial → domain [-3, 3]
+  else if (/\bexp\b/.test(ekspresi)) {
+    domain = [-3, 3];
+  }
+  // Deteksi polinomial pangkat tinggi → domain [-5, 5]
+  else if (/\^[3-9]/.test(ekspresi)) {
+    domain = [-5, 5];
+  }
+
+  return domain;
+}
+
+function tentukanDomainY(ekspresi, domainX) {
+  // Domain default Y = X (1:1)
+  var domainY = [domainX[0], domainX[1]];
+
+  // Deteksi fungsi trigonometri → Y = [-2, 2]
+  if (/\b(sin|cos)\b/.test(ekspresi)) {
+    domainY = [-2, 2];
+  } else if (/\btan\b/.test(ekspresi)) {
+    domainY = [-10, 10];
+  } else if (/\b(sinh|cosh|tanh)\b/.test(ekspresi)) {
+    domainY = [-5, 5];
+  }
+  // Deteksi logaritma → Y = [-5, 5]
+  else if (/\blog\b|\bln\b/.test(ekspresi)) {
+    domainY = [-5, 5];
+  }
+  // Deteksi akar → Y = [-1, 5]
+  else if (/\bsqrt\b/.test(ekspresi)) {
+    domainY = [-1, 5];
+  }
+  // Deteksi eksponensial → Y = [-1, 20]
+  else if (/\bexp\b/.test(ekspresi)) {
+    domainY = [-1, 20];
+  }
+  // Deteksi polinomial pangkat tinggi → Y = [-100, 100]
+  else if (/\^[3-9]/.test(ekspresi)) {
+    domainY = [-100, 100];
+  }
+  // Deteksi pecahan → Y = [-10, 10]
+  else if (/\//.test(ekspresi)) {
+    domainY = [-10, 10];
+  }
+
+  return domainY;
+}
+
+function tentukanAspectRatio(ekspresi) {
+  // Aspect ratio default 1:1
+  var ratio = 1;
+
+  // Trigonometri → 1:3 (lebar 3× tinggi)
+  if (/\b(sin|cos)\b/.test(ekspresi)) {
+    ratio = 3;
+  } else if (/\btan\b/.test(ekspresi)) {
+    ratio = 1;
+  }
+  // Logaritma → 1:1
+  else if (/\blog\b|\bln\b/.test(ekspresi)) {
+    ratio = 1;
+  }
+  // Eksponensial → 1:1
+  else if (/\bexp\b/.test(ekspresi)) {
+    ratio = 1;
+  }
+  // Polinomial pangkat tinggi → 1:1
+  else if (/\^[3-9]/.test(ekspresi)) {
+    ratio = 1;
+  }
+
+  return ratio;
+}
 
 function ekstrakEkspresi(q) {
   var lower = q.toLowerCase();
