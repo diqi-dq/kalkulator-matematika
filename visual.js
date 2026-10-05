@@ -321,15 +321,32 @@ function ekstrakEkspresi(q) {
       hasil.push({ fn: output, title: '(g∘f)(x)', color: '#1a73e8' });
     }
   }
+  
   else if (lower.startsWith("pecahkan")) {
-    var rest = q.replace(/^pecahkan\s*/i, "").trim();
-    var pers = rest.split(";")[0].trim();
-    if (pers.indexOf("=") !== -1) {
-      var parts = pers.split("=");
-      var ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")-(" + sisipKaliImplisit(parts[1]) + ")";
-      hasil.push({ fn: ekspresi, title: pers, color: '#1a73e8' });
-    }
+  var rest = q.replace(/^pecahkan\s*/i, "").trim();
+  
+  // Jika sistem persamaan (ada ;), jangan gambar
+  if (rest.indexOf(";") !== -1) {
+    return null;  // tidak ada grafik
   }
+  
+  var pers = rest.trim();
+  if (pers.indexOf("=") !== -1) {
+    var parts = pers.split("=");
+    var kiri = sisipKaliImplisit(parts[0].trim());
+    var kanan = sisipKaliImplisit(parts[1].trim());
+    
+    // Cek apakah ada variabel selain x
+    var kiriTanpaX = kiri.replace(/\bx\b/g, "");
+    var kananTanpaX = kanan.replace(/\bx\b/g, "");
+    if (/[a-zA-Z]/.test(kiriTanpaX + kananTanpaX)) {
+      return null;  // ada variabel lain (y, z), jangan gambar
+    }
+    
+    var ekspresi = "(" + kiri + ")-(" + kanan + ")";
+    hasil.push({ fn: ekspresi, title: pers, color: '#1a73e8' });
+  }
+}
 
   // Bersihkan ekspresi untuk Function Plot
   for (var i = 0; i < hasil.length; i++) {
