@@ -152,7 +152,22 @@ function pisahArgumen(rest) {
 }
 
 function konversiKomaDesimal(str) {
-  return str.replace(/(\d),(\d)/g, '$1.$2');
+  // Simpan sementara C(...) dan P(...) agar koma di dalamnya tidak diubah
+  var temp = [];
+  var hasil = str.replace(/\b[CP]\s*\(\s*\d+\s*,\s*\d+\s*\)/g, function(match) {
+    temp.push(match);
+    return "__CP__" + (temp.length - 1) + "__";
+  });
+  
+  // Konversi koma desimal ke titik
+  hasil = hasil.replace(/(\d),(\d)/g, '$1.$2');
+  
+  // Kembalikan C(...) dan P(...)
+  hasil = hasil.replace(/__CP__(\d+)__/g, function(match, idx) {
+    return temp[parseInt(idx)];
+  });
+  
+  return hasil;
 }
 
 function formatAngkaJS(n) {
