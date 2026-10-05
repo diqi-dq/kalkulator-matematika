@@ -28,14 +28,15 @@ function jalankanTier1(q, out) {
     expr = expr.replace(/\btanh\s*\(/gi, 'Math.tanh(');
     expr = expr.replace(/\babs\s*\(/gi, 'Math.abs(');
     expr = expr.replace(/\^/g, '**');
+    
     expr = expr.replace(/(\d+)!/g, function(m, n) {
-      return "(" + faktorialBigInt(parseInt(n)) + "n)";
+      return "(" + Number(faktorialBigInt(parseInt(n))) + ")";
     });
     expr = expr.replace(/\bC\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/g, function(m, n, k) {
-      return "(" + binomialBigInt(parseInt(n), parseInt(k)) + "n)";
+      return "(" + Number(binomialBigInt(parseInt(n), parseInt(k))) + ")";
     });
     expr = expr.replace(/\bP\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/g, function(m, n, k) {
-      return "(" + permutasiBigInt(parseInt(n), parseInt(k)) + "n)";
+      return "(" + Number(permutasiBigInt(parseInt(n), parseInt(k))) + ")";
     });
 
     if (!/^[\d\s\+\-\*\/\(\)\.\,\*A-Za-z_]+$/.test(expr)) {
