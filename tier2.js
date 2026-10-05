@@ -223,7 +223,7 @@ function jalankanPerintah(q, out, inputAsli) {
       var parts = pisahArgumen(rest);
       if (parts.length < 2) { out.innerHTML = "Format: bagi fungsi <f> ; <g> [; <h> ...]"; return; }
       var fungsiStr = parts.map(function(p) { return "sp.sympify('" + sisipKaliImplisit(p) + "')"; });
-      cmd += "print(tampil(" + fungsiStr.join(" / ") + "))";
+      cmd += "print(tampil(sp.cancel(" + fungsiStr.join(" / ") + ")))";
     }
     else if (lower.startsWith("komposisi fungsi")) {
       var rest = q.replace(/^komposisi fungsi\s*/i, "").trim();
