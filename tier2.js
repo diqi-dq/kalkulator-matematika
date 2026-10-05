@@ -556,6 +556,9 @@ function tambahVisualOtomatis(q, out) {
     "limit",
     "sederhanakan", "faktorkan", "jabarkan",
     "pecahkan"
+      // Operasi fungsi
+    "jumlah fungsi", "kurang fungsi", "kali fungsi", "bagi fungsi",
+    "komposisi fungsi", "komposisi balik"
   ];
 
   var layak = false;
@@ -686,6 +689,7 @@ function ekstrakEkspresi(q) {
     ekspresi = sisipKaliImplisit(rest);
   } else if (lower.startsWith("pecahkan")) {
     var rest = q.replace(/^pecahkan\s*/i, "").trim();
+
     // Ambil persamaan pertama
     var pers = rest.split(";")[0].trim();
     if (pers.indexOf("=") !== -1) {
@@ -696,6 +700,78 @@ function ekstrakEkspresi(q) {
     }
   }
 
+    // Operasi fungsi
+  else if (lower.startsWith("jumlah fungsi")) {
+    var rest = q.replace(/^jumlah fungsi\s*/i, "").trim();
+    var parts = pisahArgumen(rest);
+    if (parts.length >= 2) {
+      var f = sisipKaliImplisit(parts[0]);
+      var g = sisipKaliImplisit(parts[1]);
+      ekspresi = "(" + f + ")+(" + g + ")";
+      // Tambahkan fungsi lain jika ada
+      for (var i = 2; i < parts.length; i++) {
+        ekspresi += "+(" + sisipKaliImplisit(parts[i]) + ")";
+      }
+    }
+  } else if (lower.startsWith("kurang fungsi")) {
+    var rest = q.replace(/^kurang fungsi\s*/i, "").trim();
+    var parts = pisahArgumen(rest);
+    if (parts.length >= 2) {
+      var f = sisipKaliImplisit(parts[0]);
+      var g = sisipKaliImplisit(parts[1]);
+      ekspresi = "(" + f + ")-(" + g + ")";
+      for (var i = 2; i < parts.length; i++) {
+        ekspresi += "-(" + sisipKaliImplisit(parts[i]) + ")";
+      }
+    }
+  } else if (lower.startsWith("kali fungsi")) {
+    var rest = q.replace(/^kali fungsi\s*/i, "").trim();
+    var parts = pisahArgumen(rest);
+    if (parts.length >= 2) {
+      var f = sisipKaliImplisit(parts[0]);
+      var g = sisipKaliImplisit(parts[1]);
+      ekspresi = "(" + f + ")*(" + g + ")";
+      for (var i = 2; i < parts.length; i++) {
+        ekspresi += "*(" + sisipKaliImplisit(parts[i]) + ")";
+      }
+    }
+  } else if (lower.startsWith("bagi fungsi")) {
+    var rest = q.replace(/^bagi fungsi\s*/i, "").trim();
+    var parts = pisahArgumen(rest);
+    if (parts.length >= 2) {
+      var f = sisipKaliImplisit(parts[0]);
+      var g = sisipKaliImplisit(parts[1]);
+      ekspresi = "(" + f + ")/(" + g + ")";
+      for (var i = 2; i < parts.length; i++) {
+        ekspresi += "/(" + sisipKaliImplisit(parts[i]) + ")";
+      }
+    }
+  } else if (lower.startsWith("komposisi fungsi")) {
+    var rest = q.replace(/^komposisi fungsi\s*/i, "").trim();
+    var parts = pisahArgumen(rest);
+    if (parts.length >= 2) {
+      // Komposisi: f(g(x)) — mulai dari paling kanan
+      var xVar = deteksiVariabel(parts.join(" "));
+      var hasil = sisipKaliImplisit(parts[parts.length - 1]);
+      for (var i = parts.length - 2; i >= 0; i--) {
+        var f = sisipKaliImplisit(parts[i]);
+        // Substitusi manual: ganti xVar dengan hasil
+        // Untuk Function Plot, kita render fungsi komposit
+        hasil = f.replace(new RegExp("\\b" + xVar + "\\b", "g"), "(" + hasil + ")");
+      }
+      ekspresi = hasil;
+    }
+  } else if (lower.startsWith("komposisi balik")) {
+    var rest = q.replace(/^komposisi balik\s*/i, "").trim();
+    var parts = pisahArgumen(rest);
+    if (parts.length >= 2) {
+      var f = sisipKaliImplisit(parts[0]);
+      var g = sisipKaliImplisit(parts[1]);
+      var xVar = deteksiVariabel(parts.join(" "));
+      // g(f(x)): substitusi x di g dengan f
+      ekspresi = g.replace(new RegExp("\\b" + xVar + "\\b", "g"), "(" + f + ")");
+    }
+  }
   // Bersihkan ekspresi untuk Function Plot
   if (ekspresi) {
     // Ganti ** dengan ^
