@@ -322,99 +322,55 @@ function ekstrakEkspresi(q) {
     }
   }
   
-else if (lower.startsWith("pecahkan")) {
-  var rest = q.replace(/^pecahkan\s*/i, "").trim();
-  
-  // Jika sistem persamaan (ada ;)
-  if (rest.indexOf(";") !== -1) {
-    var pers = rest.split(";").map(function(s){return s.trim();});
-    var warna = ['#ea4335', '#34a853', '#fbbc04', '#9c27b0', '#1a73e8'];
-    
-    for (var i = 0; i < pers.length; i++) {
-      var p = pers[i];
-      if (p.indexOf("=") === -1) continue;
-      
-      var parts = p.split("=");
-      var kiri = parts[0].trim();
-      var kanan = parts[1].trim();
-      
-      var ekspresi = "";
-      
-      // Deteksi tanda y di kiri
-      var yDiKiri = /\by\b/.test(kiri);
-      var yDiKanan = /\by\b/.test(kanan);
-      
-      if (yDiKiri && !yDiKanan) {
-        // y di kiri
-        // Cek tanda: +y atau -y
-        var yMatch = kiri.match(/([+-]?)\s*y/);
-        var tandaY = yMatch ? (yMatch[1] || "+") : "+";
-        
-        // Hapus y dari kiri
-        var kiriTanpaY = kiri.replace(/[+-]?\s*\by\b/g, "");
-        // Bersihkan operator di akhir
-        kiriTanpaY = kiriTanpaY.replace(/[+-]\s*$/, "").trim();
-        if (kiriTanpaY === "") kiriTanpaY = "0";
-        
-        if (tandaY === "+") {
-          // +y: y = kanan - kiriTanpaY
-          ekspresi = "(" + sisipKaliImplisit(kanan) + ")-(" + sisipKaliImplisit(kiriTanpaY) + ")";
-        } else {
-          // -y: y = kiriTanpaY - kanan
-          ekspresi = "(" + sisipKaliImplisit(kiriTanpaY) + ")-(" + sisipKaliImplisit(kanan) + ")";
+  // === PECAHKAN ===
+  else if (lower.startsWith("pecahkan")) {
+    var rest = q.replace(/^pecahkan\s*/i, "").trim();
+
+    // Jika sistem persamaan (ada ;)
+    if (rest.indexOf(";") !== -1) {
+      var pers = rest.split(";").map(function(s){return s.trim();});
+      var warna = ['#ea4335', '#34a853', '#fbbc04', '#9c27b0', '#1a73e8'];
+
+      for (var i = 0; i < pers.length; i++) {
+        var p = pers[i];
+        var ekspresi = konversiKeY(p);
+        if (ekspresi) {
+          hasil.push({
+            fn: ekspresi,
+            title: p + " → y = " + ekspresi,
+            color: warna[i % warna.length]
+          });
         }
-      } else if (yDiKanan && !yDiKiri) {
-        // y di kanan
-        var yMatch = kanan.match(/([+-]?)\s*y/);
-        var tandaY = yMatch ? (yMatch[1] || "+") : "+";
-        
-        var kananTanpaY = kanan.replace(/[+-]?\s*\by\b/g, "");
-        kananTanpaY = kananTanpaY.replace(/[+-]\s*$/, "").trim();
-        if (kananTanpaY === "") kananTanpaY = "0";
-        
-        if (tandaY === "+") {
-          // +y: y = kiri - kananTanpaY
-          ekspresi = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kananTanpaY) + ")";
-        } else {
-          // -y: y = kananTanpaY - kiri
-          ekspresi = "(" + sisipKaliImplisit(kananTanpaY) + ")-(" + sisipKaliImplisit(kiri) + ")";
-        }
-      } else {
-        // Tidak ada y atau y di kedua sisi → skip
-        continue;
       }
-      
-      if (ekspresi) {
-        hasil.push({
-          fn: ekspresi,
-          title: p + " → y = " + ekspresi,
-          color: warna[i % warna.length]
-        });
+      return hasil.length > 0 ? hasil : null;
+    }
+
+    // Persamaan tunggal
+    var ekspresi = konversiKeY(rest);
+    if (ekspresi) {
+      hasil.push({ fn: ekspresi, title: rest, color: '#1a73e8' });
+    } else {
+      // Coba sebagai fungsi y = f(x)
+      var pers = rest.trim();
+      if (pers.indexOf("=") !== -1) {
+        var parts = pers.split("=");
+        var kiri = sisipKaliImplisit(parts[0].trim());
+        var kanan = sisipKaliImplisit(parts[1].trim());
+        
+        // Cek variabel selain x
+        var kiriTanpaX = kiri.replace(/(^|[^a-zA-Z])x([^a-zA-Z]|$)/g, "");
+        var kananTanpaX = kanan.replace(/(^|[^a-zA-Z])x([^a-zA-Z]|$)/g, "");
+        if (/[a-zA-Z]/.test(kiriTanpaX + kananTanpaX)) {
+          return null;
+        }
+        
+        ekspresi = "(" + kiri + ")-(" + kanan + ")";
+        hasil.push({ fn: ekspresi, title: pers, color: '#1a73e8' });
       }
     }
-    
-    return hasil.length > 0 ? hasil : null;
   }
 
   
-  // Persamaan tunggal
-  var pers = rest.trim();
-  if (pers.indexOf("=") !== -1) {
-    var parts = pers.split("=");
-    var kiri = sisipKaliImplisit(parts[0].trim());
-    var kanan = sisipKaliImplisit(parts[1].trim());
-    
-    // Cek apakah ada variabel selain x
-    var kiriTanpaX = kiri.replace(/\bx\b/g, "");
-    var kananTanpaX = kanan.replace(/\bx\b/g, "");
-    if (/[a-zA-Z]/.test(kiriTanpaX + kananTanpaX)) {
-      return null;
-    }
-    
-    var ekspresi = "(" + kiri + ")-(" + kanan + ")";
-    hasil.push({ fn: ekspresi, title: pers, color: '#1a73e8' });
-  }
-}
   // Bersihkan ekspresi untuk Function Plot
   for (var i = 0; i < hasil.length; i++) {
     hasil[i].fn = hasil[i].fn.replace(/\*\*/g, "^");
@@ -424,4 +380,75 @@ else if (lower.startsWith("pecahkan")) {
   }
 
   return hasil.length > 0 ? hasil : null;
+}
+
+function konversiKeY(persamaan) {
+  if (persamaan.indexOf("=") === -1) return null;
+
+  var parts = persamaan.split("=");
+  var kiri = parts[0].trim();
+  var kanan = parts[1].trim();
+
+  // Deteksi y (meski menempel angka atau pangkat)
+  var reY = /(^|[^a-zA-Z])y(\^?\d*)?([^a-zA-Z]|$)/;
+  var yDiKiri = reY.test(kiri);
+  var yDiKanan = reY.test(kanan);
+
+  // Jika y di kedua sisi, pindah ke kiri
+  if (yDiKiri && yDiKanan) {
+    // Contoh: 2y = x + y → y = x
+    // Gabungkan: (kiri) - (kanan) = 0
+    var baru = "(" + kiri + ")-(" + kanan + ")";
+    // Sekarang y hanya di satu sisi
+    return konversiKeY(baru + "=0");
+  }
+
+  // Jika y di penyebut → skip
+  if (yDiKiri && /\by\b/.test(kiri) && /\/\s*\d*\s*y/.test(kiri)) return null;
+  if (yDiKanan && /\by\b/.test(kanan) && /\/\s*\d*\s*y/.test(kanan)) return null;
+
+  // Jika y punya pangkat → skip (kecuali pangkat 1)
+  var yPangkatKiri = kiri.match(/y\^(\d+)/);
+  var yPangkatKanan = kanan.match(/y\^(\d+)/);
+  if (yPangkatKiri && yPangkatKiri[1] !== "1") return null;
+  if (yPangkatKanan && yPangkatKanan[1] !== "1") return null;
+
+  // Jika ada variabel selain x dan y → skip
+  var kiriTanpaXY = kiri.replace(/(^|[^a-zA-Z])[xy]([^a-zA-Z]|$)/g, "");
+  var kananTanpaXY = kanan.replace(/(^|[^a-zA-Z])[xy]([^a-zA-Z]|$)/g, "");
+  if (/[a-zA-Z]/.test(kiriTanpaXY + kananTanpaXY)) return null;
+
+  var ekspresi = "";
+
+  if (yDiKiri && !yDiKanan) {
+    var yMatch = kiri.match(/([+-]?)\s*(\d*)\s*y/);
+    var tandaY = yMatch ? (yMatch[1] || "+") : "+";
+    var koefY = yMatch && yMatch[2] ? yMatch[2] : "1";
+    
+    var kiriTanpaY = kiri.replace(/[+-]?\s*\d*\s*y/g, "");
+    kiriTanpaY = kiriTanpaY.replace(/[+-]\s*$/, "").trim();
+    if (kiriTanpaY === "") kiriTanpaY = "0";
+    
+    var pembilang = "(" + sisipKaliImplisit(kanan) + ")-(" + sisipKaliImplisit(kiriTanpaY) + ")";
+    if (tandaY === "-") pembilang = "(-1)*(" + pembilang + ")";
+    
+    ekspresi = (koefY === "1") ? pembilang : "(" + pembilang + ")/(" + koefY + ")";
+  } else if (yDiKanan && !yDiKiri) {
+    var yMatch = kanan.match(/([+-]?)\s*(\d*)\s*y/);
+    var tandaY = yMatch ? (yMatch[1] || "+") : "+";
+    var koefY = yMatch && yMatch[2] ? yMatch[2] : "1";
+    
+    var kananTanpaY = kanan.replace(/[+-]?\s*\d*\s*y/g, "");
+    kananTanpaY = kananTanpaY.replace(/[+-]\s*$/, "").trim();
+    if (kananTanpaY === "") kananTanpaY = "0";
+    
+    var pembilang = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kananTanpaY) + ")";
+    if (tandaY === "-") pembilang = "(-1)*(" + pembilang + ")";
+    
+    ekspresi = (koefY === "1") ? pembilang : "(" + pembilang + ")/(" + koefY + ")";
+  } else {
+    return null;
+  }
+
+  return ekspresi;
 }
