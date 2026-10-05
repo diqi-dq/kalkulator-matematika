@@ -52,7 +52,8 @@ function tambahVisualOtomatis(q, out) {
   legendDiv.innerHTML = legendHTML;
   out.appendChild(legendDiv);
 
-  var lebar = out.clientWidth > 100 ? out.clientWidth - 42 : 600;
+  // Lebar responsif: gunakan clientWidth, fallback ke 600 jika 0
+  var lebar = out.clientWidth > 100 ? out.clientWidth - 42 : Math.min(window.innerWidth - 60, 600);
   var tinggi = 400;
 
   try {
@@ -391,75 +392,52 @@ function konversiKeY(persamaan) {
   var kiri = parts[0].trim();
   var kanan = parts[1].trim();
 
-  // Cek y di dalam fungsi → skip
-  if (/\w+\([^)]*y[^)]*\)/.test(kiri) || /\w+\([^)]*y[^)]*\)/.test(kanan)) {
-    return null;
-  }
+  // 1. Skip jika y ada di dalam argumen fungsi atau di penyebut
+  if (/\b(sin|cos|tan|asin|acos|atan|sinh|cosh|tanh|log|ln|sqrt)\b[^=]*\by\b/.test(kiri + kanan)) return null;
+  if (/\/\s*[^=]*\by\b/.test(kiri + kanan)) return null;
 
-  // Cek y di penyebut → skip
-  if (/\/\s*[^\/]*\by\b/.test(kiri) || /\/\s*[^\/]*\by\b/.test(kanan)) {
-    return null;
-  }
+  // 2. Skip jika y berpangkat > 1
+  if (/y\s*(\^|\*\*)\s*([2-9]|\d{2,})/.test(kiri + kanan)) return null;
 
-  // Cek y pangkat > 1 → skip
-  var yPangkatKiri = kiri.match(/y\s*\^\s*(\d+)/);
-  var yPangkatKanan = kanan.match(/y\s*\^\s*(\d+)/);
-  if (yPangkatKiri && parseInt(yPangkatKiri[1]) > 1) return null;
-  if (yPangkatKanan && parseInt(yPangkatKanan[1]) > 1) return null;
+  // 3. Validasi hanya ada variabel x dan y (abaikan nama fungsi matematika)
+  var bersihkanFungsi = (kiri + kanan).replace(/\b(sin|cos|tan|asin|acos|atan|sinh|cosh|tanh|log|ln|sqrt|exp|pi)\b/gi, "");
+  var variabelLain = bersihkanFungsi.replace(/[0-9\+\-\*\/\^\(\)\=\s]/g, "").replace(/[xy]/gi, "");
+  if (variabelLain.length > 0) return null;
 
-  // Deteksi y
-  var reY = /(^|[^a-zA-Z])y(\^?\d*)?([^a-zA-Z]|$)/;
+  // 4. Deteksi posisi y
+  var reY = /(^|[^a-zA-Z])y([^a-zA-Z]|$)/;
   var yDiKiri = reY.test(kiri);
   var yDiKanan = reY.test(kanan);
 
-  // Jika y di kedua sisi, pindah ke kiri
   if (yDiKiri && yDiKanan) {
-    var baru = "(" + kiri + ")-(" + kanan + ")";
-    return konversiKeY(baru + "=0");
+    return konversiKeY("(" + kiri + ")-(" + kanan + ")=0");
   }
-
-  // Jika tidak ada y di kedua sisi → skip
   if (!yDiKiri && !yDiKanan) return null;
 
-  // Cek variabel selain x dan y → skip
-  var kiriTanpaXY = kiri.replace(/(^|[^a-zA-Z])[xy]([^a-zA-Z]|$)/g, "");
-  var kananTanpaXY = kanan.replace(/(^|[^a-zA-Z])[xy]([^a-zA-Z]|$)/g, "");
-  if (/[a-zA-Z]/.test(kiriTanpaXY + kananTanpaXY)) return null;
+  // 5. Isolasi y (Tangani kasus koefisien dengan atau tanpa *)
+  var sisiY = yDiKiri ? kiri : kanan;
+  var sisiLain = yDiKiri ? kanan : kiri;
 
-  var ekspresi = "";
+  var matchY = sisiY.match(/([+-]?)\s*(\d*\.?\d*)\s*\*?\s*\by\b/);
+  if (!matchY) return null;
 
-  if (yDiKiri && !yDiKanan) {
-    var yMatch = kiri.match(/([+-]?)\s*(\d*)\s*y/);
-    var tandaY = yMatch ? (yMatch[1] || "+") : "+";
-    var koefY = yMatch && yMatch[2] ? yMatch[2] : "1";
+  var tandaY = matchY[1] === "-" ? "-" : "+";
+  var koefY = matchY[2] && matchY[2] !== "" ? matchY[2] : "1";
 
-    var kiriTanpaY = kiri.replace(/[+-]?\s*\d*\s*y/g, "");
-    kiriTanpaY = kiriTanpaY.replace(/[+-]\s*$/, "").trim();
-    if (kiriTanpaY === "") kiriTanpaY = "0";
+  // Hapus term y dari sisinya
+  var sisaSisiY = sisiY.replace(/([+-]?)\s*\d*\.?\d*\s*\*?\s*\by\b/g, "").trim();
+  sisaSisiY = sisaSisiY.replace(/^[+-]\s*/, "").replace(/[+-]\s*$/, "").trim();
+  if (sisaSisiY === "") sisaSisiY = "0";
 
-    var pembilang = "(" + sisipKaliImplisit(kanan) + ")-(" + sisipKaliImplisit(kiriTanpaY) + ")";
-    if (tandaY === "-") pembilang = "(-1)*(" + pembilang + ")";
+  var pembilang = "(" + sisipKaliImplisit(sisiLain) + ")-(" + sisipKaliImplisit(sisaSisiY) + ")";
+  if (tandaY === "-") pembilang = "(-1)*(" + pembilang + ")";
 
-    ekspresi = (koefY === "1") ? pembilang : "(" + pembilang + ")/(" + koefY + ")";
-  } else {
-    var yMatch = kanan.match(/([+-]?)\s*(\d*)\s*y/);
-    var tandaY = yMatch ? (yMatch[1] || "+") : "+";
-    var koefY = yMatch && yMatch[2] ? yMatch[2] : "1";
+  var hasilEkspresi = (koefY === "1") ? pembilang : "(" + pembilang + ")/(" + koefY + ")";
 
-    var kananTanpaY = kanan.replace(/[+-]?\s*\d*\s*y/g, "");
-    kananTanpaY = kananTanpaY.replace(/[+-]\s*$/, "").trim();
-    if (kananTanpaY === "") kananTanpaY = "0";
+  // Pembersihan pola nol murni
+  hasilEkspresi = hasilEkspresi.replace(/\+\s*0\b/g, "")
+                              .replace(/-\s*0\b/g, "")
+                              .replace(/\(\s*0\s*\)/g, "0");
 
-    var pembilang = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kananTanpaY) + ")";
-    if (tandaY === "-") pembilang = "(-1)*(" + pembilang + ")";
-
-    ekspresi = (koefY === "1") ? pembilang : "(" + pembilang + ")/(" + koefY + ")";
-  }
-
-  // Bersihkan +0 dan -0
-  ekspresi = ekspresi.replace(/\+\s*0\b/g, "");
-  ekspresi = ekspresi.replace(/-\s*0\b/g, "");
-  ekspresi = ekspresi.replace(/\(\s*\)/g, "0");
-
-  return ekspresi;
+  return hasilEkspresi;
 }
