@@ -83,6 +83,8 @@ var daftarPerintah = [
   { kategori: "Trigonometri", nama: "Tangen", format: "tangen <sudut>", contoh: "tangen pi/4", ket: "tan(x)." },
   { kategori: "Trigonometri", nama: "Arcsinus", format: "arcsinus <nilai>", contoh: "arcsinus 0,5", ket: "arcsin(x)." },
   { kategori: "Trigonometri", nama: "Sinus hiperbolik", format: "sinus hiperbolik <nilai>", contoh: "sinus hiperbolik 1", ket: "sinh(x)." },
+  { kategori: "Trigonometri", nama: "Kosinus hiperbolik", format: "kosinus hiperbolik <nilai>", contoh: "kosinus hiperbolik 1", ket: "cosh(x)." },
+  { kategori: "Trigonometri", nama: "Tangen hiperbolik", format: "tangen hiperbolik <nilai>", contoh: "tangen hiperbolik 1", ket: "tanh(x)." },
   { kategori: "Trigonometri", nama: "Derajat ke radian", format: "derajat ke radian <derajat>", contoh: "derajat ke radian 180", ket: "Konversi sudut." },
 
   { kategori: "Kombinatorika", nama: "Faktorial", format: "faktorial n", contoh: "faktorial 5", ket: "n!." },
