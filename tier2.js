@@ -7,8 +7,37 @@
    - statistik.js (jalankanStatistik)
    - pyodide-loader.js (muatPyodide, py, siap, sedangMemuat)
    ======================================================== */
+function paksaDesimalHiperbolik(q) {
+  var lower = q.toLowerCase();
+  
+  // Hanya untuk perintah hiperbolik
+  var perintahHiperbolik = [
+    "sinus hiperbolik",
+    "kosinus hiperbolik",
+    "tangen hiperbolik"
+  ];
+  
+  var kena = false;
+  for (var i = 0; i < perintahHiperbolik.length; i++) {
+    if (lower.startsWith(perintahHiperbolik[i])) {
+      kena = true;
+      break;
+    }
+  }
+  
+  if (!kena) return q;  // bukan perintah hiperbolik, tidak diubah
+  
+  // Konversi angka integer menjadi float
+  // Contoh: "sinus hiperbolik 1" → "sinus hiperbolik 1.0"
+  //         "sinus hiperbolik 1/1" → "sinus hiperbolik 1.0/1.0"
+  //         "sinus hiperbolik 0,5" → "sinus hiperbolik 0.5" (sudah dari konversiKomaDesimal)
+  var hasil = q.replace(/\b(\d+)\b(?!\.\d)(?![a-zA-Z])/g, '$1.0');
+  
+  return hasil;
+}
 
-function jalankanPerintah(q, out, inputAsli) {
+
+   function jalankanPerintah(q, out, inputAsli) {
   out.innerHTML = "<em>Menghitung...</em>";
 
   q = q.replace(/\^/g, "**");
@@ -504,6 +533,8 @@ window.kmJalankan = function() {
   if (!q) { out.innerHTML = "Ketik perintah dulu!"; return; }
 
   q = konversiKomaDesimal(q);
+  q = paksaDesimalHiperbolik(q);
+
   var inputAsli = q;
 
   if (jalankanTier1(q, out)) {
