@@ -547,7 +547,6 @@ window.kmJalankan = function() {
 function tambahVisualOtomatis(q, out) {
   var lower = q.toLowerCase();
 
-  // Perintah yang layak diberi visual
   var perintahVisual = [
     "sinus", "kosinus", "tangen", "kosekan", "sekan", "kotangen",
     "arcsinus", "arckosinus", "arcktangen",
@@ -556,7 +555,6 @@ function tambahVisualOtomatis(q, out) {
     "limit",
     "sederhanakan", "faktorkan", "jabarkan",
     "pecahkan",
-      // Operasi fungsi
     "jumlah fungsi", "kurang fungsi", "kali fungsi", "bagi fungsi",
     "komposisi fungsi", "komposisi balik"
   ];
@@ -570,31 +568,40 @@ function tambahVisualOtomatis(q, out) {
   }
   if (!layak) return;
 
-  // Ekstrak ekspresi
-  var ekspresi = ekstrakEkspresi(q);
-  if (!ekspresi) return;
+  var dataPlot = ekstrakEkspresi(q);
+  if (!dataPlot || dataPlot.length === 0) return;
 
-  // Cek library
   if (typeof functionPlot === 'undefined') return;
 
-  // Tambahkan container grafik
   var plotDiv = document.createElement('div');
   plotDiv.id = 'km-plot';
-  plotDiv.style = 'width:100%; height:300px; margin-top:15px; border:1px solid #e0e0e0; border-radius:6px; background:#fff;';
+  plotDiv.style = 'width:100%; height:400px; margin-top:15px; border:1px solid #e0e0e0; border-radius:6px; background:#fff;';
   out.appendChild(plotDiv);
 
-  // Tentukan domain
-  var domain = tentukanDomain(ekspresi);
+  // Tentukan domain berdasarkan fungsi pertama
+  var domainX = tentukanDomain(dataPlot[0].fn);
+  var domainY = tentukanDomainY(dataPlot[0].fn, domainX);
+  var aspectRatio = tentukanAspectRatio(dataPlot[0].fn);
 
-  // Render grafik
+  var lebar = out.clientWidth - 42;
+  var tinggi = Math.min(lebar / aspectRatio, 500);
+
   try {
     functionPlot({
       target: '#km-plot',
-      width: out.clientWidth - 42,
-      height: 300,
+      width: lebar,
+      height: tinggi,
       grid: true,
-      xAxis: { domain: domain },
-      data: [{ fn: ekspresi, color: '#1a73e8', graphType: 'polyline' }]
+      xAxis: { domain: domainX },
+      yAxis: { domain: domainY },
+      data: dataPlot.map(function(d) {
+        return {
+          fn: d.fn,
+          color: d.color,
+          title: d.title,
+          graphType: 'polyline'
+        };
+      })
     });
   } catch (e) {
     console.warn('Gagal render grafik:', e);
@@ -604,187 +611,179 @@ function tambahVisualOtomatis(q, out) {
 
 function ekstrakEkspresi(q) {
   var lower = q.toLowerCase();
-  var ekspresi = "";
+  var hasil = [];  // Array of { fn, title, color }
 
-  // Trigonometri
-  if (lower.startsWith("sinus hiperbolik")) {
-    var e = q.replace(/^sinus hiperbolik\s*/i, "").trim();
-    ekspresi = "sinh(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("kosinus hiperbolik")) {
-    var e = q.replace(/^kosinus hiperbolik\s*/i, "").trim();
-    ekspresi = "cosh(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("tangen hiperbolik")) {
-    var e = q.replace(/^tangen hiperbolik\s*/i, "").trim();
-    ekspresi = "tanh(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("arcsinus")) {
-    var e = q.replace(/^arcsinus\s*/i, "").trim();
-    ekspresi = "asin(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("arckosinus")) {
-    var e = q.replace(/^arckosinus\s*/i, "").trim();
-    ekspresi = "acos(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("arcktangen")) {
-    var e = q.replace(/^arcktangen\s*/i, "").trim();
-    ekspresi = "atan(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("sinus")) {
+  // Trigonometri — hanya output
+  if (lower.startsWith("sinus")) {
     var e = q.replace(/^sinus\s*/i, "").trim();
-    // Jika argumen konstanta (mis. pi/7), tampilkan sin(x)
     if (!/[a-zA-Z]/.test(e)) {
-      ekspresi = "sin(x)";
+      hasil.push({ fn: 'sin(x)', title: 'sin(x)', color: '#1a73e8' });
     } else {
-      ekspresi = "sin(" + sisipKaliImplisit(e) + ")";
+      hasil.push({ fn: 'sin(' + sisipKaliImplisit(e) + ')', title: 'sin(' + e + ')', color: '#1a73e8' });
     }
   } else if (lower.startsWith("kosinus")) {
     var e = q.replace(/^kosinus\s*/i, "").trim();
     if (!/[a-zA-Z]/.test(e)) {
-      ekspresi = "cos(x)";
+      hasil.push({ fn: 'cos(x)', title: 'cos(x)', color: '#1a73e8' });
     } else {
-      ekspresi = "cos(" + sisipKaliImplisit(e) + ")";
+      hasil.push({ fn: 'cos(' + sisipKaliImplisit(e) + ')', title: 'cos(' + e + ')', color: '#1a73e8' });
     }
   } else if (lower.startsWith("tangen")) {
     var e = q.replace(/^tangen\s*/i, "").trim();
     if (!/[a-zA-Z]/.test(e)) {
-      ekspresi = "tan(x)";
+      hasil.push({ fn: 'tan(x)', title: 'tan(x)', color: '#1a73e8' });
     } else {
-      ekspresi = "tan(" + sisipKaliImplisit(e) + ")";
+      hasil.push({ fn: 'tan(' + sisipKaliImplisit(e) + ')', title: 'tan(' + e + ')', color: '#1a73e8' });
     }
-  } else if (lower.startsWith("kosekan")) {
-    var e = q.replace(/^kosekan\s*/i, "").trim();
-    ekspresi = "1/sin(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("sekan")) {
-    var e = q.replace(/^sekan\s*/i, "").trim();
-    ekspresi = "1/cos(" + sisipKaliImplisit(e) + ")";
-  } else if (lower.startsWith("kotangen")) {
-    var e = q.replace(/^kotangen\s*/i, "").trim();
-    ekspresi = "1/tan(" + sisipKaliImplisit(e) + ")";
   }
-  // Kalkulus
+  // Kalkulus — hanya output
   else if (lower.startsWith("integral")) {
     var rest = q.replace(/^integral\s*/i, "").trim();
-    // Ambil ekspresi sebelum ';'
     var ekspresiPart = rest.split(";")[0].trim();
-    ekspresi = sisipKaliImplisit(ekspresiPart);
+    hasil.push({ fn: sisipKaliImplisit(ekspresiPart), title: ekspresiPart, color: '#1a73e8' });
   } else if (lower.startsWith("turunan2") || lower.startsWith("turunan kedua")) {
     var rest = q.replace(/^(turunan2|turunan kedua)\s*/i, "").trim();
-    ekspresi = sisipKaliImplisit(rest);
+    hasil.push({ fn: sisipKaliImplisit(rest), title: rest, color: '#1a73e8' });
   } else if (lower.startsWith("turunan")) {
     var rest = q.replace(/^turunan\s*/i, "").trim();
-    ekspresi = sisipKaliImplisit(rest);
-  } else if (lower.startsWith("limit")) {
-    var rest = q.replace(/^limit\s*/i, "").trim();
-    var arrowMatch = rest.match(/([a-zA-Z])\s*->/);
-    if (arrowMatch) {
-      var ekspresiPart = rest.substring(0, rest.indexOf(arrowMatch[0])).replace(/[;,]\s*$/, "").trim();
-      ekspresi = sisipKaliImplisit(ekspresiPart);
-    }
+    hasil.push({ fn: sisipKaliImplisit(rest), title: rest, color: '#1a73e8' });
   }
-  // Aljabar
+  // Aljabar — hanya output
   else if (lower.startsWith("sederhanakan")) {
     var rest = q.replace(/^sederhanakan\s*/i, "").trim();
-    ekspresi = sisipKaliImplisit(rest);
+    hasil.push({ fn: sisipKaliImplisit(rest), title: rest, color: '#1a73e8' });
   } else if (lower.startsWith("faktorkan")) {
     var rest = q.replace(/^faktorkan\s*/i, "").trim();
-    ekspresi = sisipKaliImplisit(rest);
-  } else if (lower.startsWith("jabarkan")) {
-    var rest = q.replace(/^jabarkan\s*/i, "").trim();
-    ekspresi = sisipKaliImplisit(rest);
-  } else if (lower.startsWith("pecahkan")) {
-    var rest = q.replace(/^pecahkan\s*/i, "").trim();
-
-    // Ambil persamaan pertama
-    var pers = rest.split(";")[0].trim();
-    if (pers.indexOf("=") !== -1) {
-      var parts = pers.split("=");
-      ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")-(" + sisipKaliImplisit(parts[1]) + ")";
-    } else {
-      ekspresi = sisipKaliImplisit(pers);
-    }
+    hasil.push({ fn: sisipKaliImplisit(rest), title: rest, color: '#1a73e8' });
   }
-
-    // Operasi fungsi
+  // Operasi fungsi — gambar input + output
   else if (lower.startsWith("jumlah fungsi")) {
     var rest = q.replace(/^jumlah fungsi\s*/i, "").trim();
     var parts = pisahArgumen(rest);
     if (parts.length >= 2) {
-      var f = sisipKaliImplisit(parts[0]);
-      var g = sisipKaliImplisit(parts[1]);
-      ekspresi = "(" + f + ")+(" + g + ")";
-      // Tambahkan fungsi lain jika ada
+      var ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")+(" + sisipKaliImplisit(parts[1]) + ")";
       for (var i = 2; i < parts.length; i++) {
         ekspresi += "+(" + sisipKaliImplisit(parts[i]) + ")";
       }
+      // Input
+      for (var i = 0; i < parts.length; i++) {
+        hasil.push({
+          fn: sisipKaliImplisit(parts[i]),
+          title: 'f' + (i + 1) + '(x) = ' + parts[i],
+          color: ['#ea4335', '#34a853', '#fbbc04'][i % 3]
+        });
+      }
+      // Output
+      hasil.push({ fn: ekspresi, title: '(f₁+...)(x)', color: '#1a73e8' });
     }
   } else if (lower.startsWith("kurang fungsi")) {
     var rest = q.replace(/^kurang fungsi\s*/i, "").trim();
     var parts = pisahArgumen(rest);
     if (parts.length >= 2) {
-      var f = sisipKaliImplisit(parts[0]);
-      var g = sisipKaliImplisit(parts[1]);
-      ekspresi = "(" + f + ")-(" + g + ")";
+      var ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")-(" + sisipKaliImplisit(parts[1]) + ")";
       for (var i = 2; i < parts.length; i++) {
         ekspresi += "-(" + sisipKaliImplisit(parts[i]) + ")";
       }
+      for (var i = 0; i < parts.length; i++) {
+        hasil.push({
+          fn: sisipKaliImplisit(parts[i]),
+          title: 'f' + (i + 1) + '(x) = ' + parts[i],
+          color: ['#ea4335', '#34a853', '#fbbc04'][i % 3]
+        });
+      }
+      hasil.push({ fn: ekspresi, title: '(f₁-...)(x)', color: '#1a73e8' });
     }
   } else if (lower.startsWith("kali fungsi")) {
     var rest = q.replace(/^kali fungsi\s*/i, "").trim();
     var parts = pisahArgumen(rest);
     if (parts.length >= 2) {
-      var f = sisipKaliImplisit(parts[0]);
-      var g = sisipKaliImplisit(parts[1]);
-      ekspresi = "(" + f + ")*(" + g + ")";
+      var ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")*(" + sisipKaliImplisit(parts[1]) + ")";
       for (var i = 2; i < parts.length; i++) {
         ekspresi += "*(" + sisipKaliImplisit(parts[i]) + ")";
       }
+      for (var i = 0; i < parts.length; i++) {
+        hasil.push({
+          fn: sisipKaliImplisit(parts[i]),
+          title: 'f' + (i + 1) + '(x) = ' + parts[i],
+          color: ['#ea4335', '#34a853', '#fbbc04'][i % 3]
+        });
+      }
+      hasil.push({ fn: ekspresi, title: '(f₁×...)(x)', color: '#1a73e8' });
     }
   } else if (lower.startsWith("bagi fungsi")) {
     var rest = q.replace(/^bagi fungsi\s*/i, "").trim();
     var parts = pisahArgumen(rest);
     if (parts.length >= 2) {
-      var f = sisipKaliImplisit(parts[0]);
-      var g = sisipKaliImplisit(parts[1]);
-      ekspresi = "(" + f + ")/(" + g + ")";
+      var ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")/(" + sisipKaliImplisit(parts[1]) + ")";
       for (var i = 2; i < parts.length; i++) {
         ekspresi += "/(" + sisipKaliImplisit(parts[i]) + ")";
       }
+      for (var i = 0; i < parts.length; i++) {
+        hasil.push({
+          fn: sisipKaliImplisit(parts[i]),
+          title: 'f' + (i + 1) + '(x) = ' + parts[i],
+          color: ['#ea4335', '#34a853', '#fbbc04'][i % 3]
+        });
+      }
+      hasil.push({ fn: ekspresi, title: '(f₁÷...)(x)', color: '#1a73e8' });
     }
   } else if (lower.startsWith("komposisi fungsi")) {
     var rest = q.replace(/^komposisi fungsi\s*/i, "").trim();
     var parts = pisahArgumen(rest);
     if (parts.length >= 2) {
-      // Komposisi: f(g(x)) — mulai dari paling kanan
       var xVar = deteksiVariabel(parts.join(" "));
-      var hasil = sisipKaliImplisit(parts[parts.length - 1]);
+      // Hitung output
+      var output = sisipKaliImplisit(parts[parts.length - 1]);
       for (var i = parts.length - 2; i >= 0; i--) {
         var f = sisipKaliImplisit(parts[i]);
-        // Substitusi manual: ganti xVar dengan hasil
-        // Untuk Function Plot, kita render fungsi komposit
-        hasil = f.replace(new RegExp("\\b" + xVar + "\\b", "g"), "(" + hasil + ")");
+        output = f.replace(new RegExp("\\b" + xVar + "\\b", "g"), "(" + output + ")");
       }
-      ekspresi = hasil;
+      // Gambar input
+      for (var i = 0; i < parts.length; i++) {
+        hasil.push({
+          fn: sisipKaliImplisit(parts[i]),
+          title: 'f' + (i + 1) + '(x) = ' + parts[i],
+          color: ['#ea4335', '#34a853', '#fbbc04'][i % 3]
+        });
+      }
+      // Gambar output
+      hasil.push({ fn: output, title: '(f₁∘...∘fₙ)(x)', color: '#1a73e8' });
     }
   } else if (lower.startsWith("komposisi balik")) {
     var rest = q.replace(/^komposisi balik\s*/i, "").trim();
     var parts = pisahArgumen(rest);
     if (parts.length >= 2) {
+      var xVar = deteksiVariabel(parts.join(" "));
       var f = sisipKaliImplisit(parts[0]);
       var g = sisipKaliImplisit(parts[1]);
-      var xVar = deteksiVariabel(parts.join(" "));
-      // g(f(x)): substitusi x di g dengan f
-      ekspresi = g.replace(new RegExp("\\b" + xVar + "\\b", "g"), "(" + f + ")");
+      var output = g.replace(new RegExp("\\b" + xVar + "\\b", "g"), "(" + f + ")");
+      // Gambar input
+      hasil.push({ fn: f, title: 'f(x) = ' + parts[0], color: '#ea4335' });
+      hasil.push({ fn: g, title: 'g(x) = ' + parts[1], color: '#34a853' });
+      // Gambar output
+      hasil.push({ fn: output, title: '(g∘f)(x)', color: '#1a73e8' });
     }
   }
-  // Bersihkan ekspresi untuk Function Plot
-  if (ekspresi) {
-    // Ganti ** dengan ^
-    ekspresi = ekspresi.replace(/\*\*/g, "^");
-    // Ganti E^ dengan exp(
-    ekspresi = ekspresi.replace(/\bE\^/g, "exp(");
-    // Ganti pi dengan PI
-    ekspresi = ekspresi.replace(/\bpi\b/gi, "PI");
-    // Ganti oo dengan Infinity
-    ekspresi = ekspresi.replace(/\boo\b/g, "Infinity");
+  // Pecahkan — hanya output (persamaan = 0)
+  else if (lower.startsWith("pecahkan")) {
+    var rest = q.replace(/^pecahkan\s*/i, "").trim();
+    var pers = rest.split(";")[0].trim();
+    if (pers.indexOf("=") !== -1) {
+      var parts = pers.split("=");
+      var ekspresi = "(" + sisipKaliImplisit(parts[0]) + ")-(" + sisipKaliImplisit(parts[1]) + ")";
+      hasil.push({ fn: ekspresi, title: pers, color: '#1a73e8' });
+    }
   }
 
-  return ekspresi || null;
+  // Bersihkan ekspresi untuk Function Plot
+  for (var i = 0; i < hasil.length; i++) {
+    hasil[i].fn = hasil[i].fn.replace(/\*\*/g, "^");
+    hasil[i].fn = hasil[i].fn.replace(/\bE\^/g, "exp(");
+    hasil[i].fn = hasil[i].fn.replace(/\bpi\b/gi, "PI");
+    hasil[i].fn = hasil[i].fn.replace(/\boo\b/g, "Infinity");
+  }
+
+  return hasil.length > 0 ? hasil : null;
 }
 
 function tentukanDomain(ekspresi) {
