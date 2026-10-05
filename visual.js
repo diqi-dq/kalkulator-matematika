@@ -322,14 +322,12 @@ function ekstrakEkspresi(q) {
     }
   }
   
- else if (lower.startsWith("pecahkan")) {
+else if (lower.startsWith("pecahkan")) {
   var rest = q.replace(/^pecahkan\s*/i, "").trim();
   
   // Jika sistem persamaan (ada ;)
   if (rest.indexOf(";") !== -1) {
     var pers = rest.split(";").map(function(s){return s.trim();});
-    var xVar = "x";
-    var yVar = "y";
     var warna = ['#ea4335', '#34a853', '#fbbc04', '#9c27b0', '#1a73e8'];
     
     for (var i = 0; i < pers.length; i++) {
@@ -340,27 +338,50 @@ function ekstrakEkspresi(q) {
       var kiri = parts[0].trim();
       var kanan = parts[1].trim();
       
-      // Ubah ke bentuk y = f(x)
-      // Contoh: x+y=5 → y = 5-x
       var ekspresi = "";
       
-      // Cek apakah kiri atau kanan mengandung y
-      if (/\by\b/.test(kiri) && !/\by\b/.test(kanan)) {
-        // y di kiri: y = kanan - (kiri tanpa y)
-        var kiriTanpaY = kiri.replace(/\by\b/g, "0");
-        ekspresi = "(" + sisipKaliImplisit(kanan) + ")-(" + sisipKaliImplisit(kiriTanpaY) + ")";
-      } else if (/\by\b/.test(kanan) && !/\by\b/.test(kiri)) {
-        // y di kanan: y = kiri - (kanan tanpa y)
-        var kananTanpaY = kanan.replace(/\by\b/g, "0");
-        ekspresi = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kananTanpaY) + ")";
-      } else if (/\by\b/.test(kiri) && /\by\b/.test(kanan)) {
-        // y di kedua sisi: pindah ke kiri
-        // Contoh: 2y = x+1 → y = (x+1)/2
-        // Skip dulu
-        continue;
+      // Deteksi tanda y di kiri
+      var yDiKiri = /\by\b/.test(kiri);
+      var yDiKanan = /\by\b/.test(kanan);
+      
+      if (yDiKiri && !yDiKanan) {
+        // y di kiri
+        // Cek tanda: +y atau -y
+        var yMatch = kiri.match(/([+-]?)\s*y/);
+        var tandaY = yMatch ? (yMatch[1] || "+") : "+";
+        
+        // Hapus y dari kiri
+        var kiriTanpaY = kiri.replace(/[+-]?\s*\by\b/g, "");
+        // Bersihkan operator di akhir
+        kiriTanpaY = kiriTanpaY.replace(/[+-]\s*$/, "").trim();
+        if (kiriTanpaY === "") kiriTanpaY = "0";
+        
+        if (tandaY === "+") {
+          // +y: y = kanan - kiriTanpaY
+          ekspresi = "(" + sisipKaliImplisit(kanan) + ")-(" + sisipKaliImplisit(kiriTanpaY) + ")";
+        } else {
+          // -y: y = kiriTanpaY - kanan
+          ekspresi = "(" + sisipKaliImplisit(kiriTanpaY) + ")-(" + sisipKaliImplisit(kanan) + ")";
+        }
+      } else if (yDiKanan && !yDiKiri) {
+        // y di kanan
+        var yMatch = kanan.match(/([+-]?)\s*y/);
+        var tandaY = yMatch ? (yMatch[1] || "+") : "+";
+        
+        var kananTanpaY = kanan.replace(/[+-]?\s*\by\b/g, "");
+        kananTanpaY = kananTanpaY.replace(/[+-]\s*$/, "").trim();
+        if (kananTanpaY === "") kananTanpaY = "0";
+        
+        if (tandaY === "+") {
+          // +y: y = kiri - kananTanpaY
+          ekspresi = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kananTanpaY) + ")";
+        } else {
+          // -y: y = kananTanpaY - kiri
+          ekspresi = "(" + sisipKaliImplisit(kananTanpaY) + ")-(" + sisipKaliImplisit(kiri) + ")";
+        }
       } else {
-        // Tidak ada y: gambar sebagai fungsi x
-        ekspresi = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kanan) + ")";
+        // Tidak ada y atau y di kedua sisi → skip
+        continue;
       }
       
       if (ekspresi) {
@@ -374,6 +395,7 @@ function ekstrakEkspresi(q) {
     
     return hasil.length > 0 ? hasil : null;
   }
+
   
   // Persamaan tunggal
   var pers = rest.trim();
