@@ -215,7 +215,8 @@ function jalankanPerintah(q, out, inputAsli) {
       var parts = pisahArgumen(rest);
       if (parts.length < 2) { out.innerHTML = "Format: kali fungsi <f> ; <g> [; <h> ...]"; return; }
       var fungsiStr = parts.map(function(p) { return "sp.sympify('" + sisipKaliImplisit(p) + "')"; });
-      cmd += "print(tampil(" + fungsiStr.join(" * ") + "))";
+      var expr = fungsiStr.join(" * ");
+      cmd += "print(tampil_double(" + expr + "))";
     }
     else if (lower.startsWith("bagi fungsi")) {
       var rest = q.replace(/^bagi fungsi\s*/i, "").trim();
@@ -235,7 +236,7 @@ function jalankanPerintah(q, out, inputAsli) {
       var f = sisipKaliImplisit(parts[i]);
       hasil = "sp.sympify('" + f + "').subs(sp.Symbol('" + xVar + "'), " + hasil + ")";
       }
-      cmd += "print(tampil(" + hasil + "))";
+      cmd += "print(tampil_double(" + hasil + "))";
     }
     else if (lower.startsWith("komposisi balik")) {
       var rest = q.replace(/^komposisi balik\s*/i, "").trim();
@@ -244,7 +245,7 @@ function jalankanPerintah(q, out, inputAsli) {
       var f = sisipKaliImplisit(parts[0]);
       var g = sisipKaliImplisit(parts[1]);
       var xVar = deteksiVariabel(f + " " + g);
-      cmd += "print(tampil(sp.sympify('" + g + "').subs(sp.Symbol('" + xVar + "'), sp.sympify('" + f + "'))))";
+      cmd += "print(tampil_double(sp.sympify('" + g + "').subs(sp.Symbol('" + xVar + "'), sp.sympify('" + f + "'))))";
     }
     else if (lower.startsWith("sederhanakan")) {
       expr = q.replace(/^sederhanakan\s*/i, "").trim();

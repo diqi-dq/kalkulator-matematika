@@ -163,6 +163,25 @@ def tampil(expr):
         except Exception:
             return str(expr)
             
+def tampil_double(expr):
+    """Tampilkan bentuk asli dan bentuk expand."""
+    try:
+        # Bentuk asli
+        asli = latex(expr)
+        # Bentuk expand
+        expanded = sp.expand(expr)
+        exp_latex = latex(expanded)
+        # Jika sama, tampilkan satu saja
+        if asli == exp_latex:
+            return asli
+        # Jika beda, tampilkan keduanya
+        return asli + " = " + exp_latex
+    except Exception:
+        try:
+            return latex(expr)
+        except Exception:
+            return str(expr)
+
 def tampil_deret(expr):
     try:
         hasil = latex(expr)
