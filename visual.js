@@ -322,14 +322,60 @@ function ekstrakEkspresi(q) {
     }
   }
   
-  else if (lower.startsWith("pecahkan")) {
+ else if (lower.startsWith("pecahkan")) {
   var rest = q.replace(/^pecahkan\s*/i, "").trim();
   
-  // Jika sistem persamaan (ada ;), jangan gambar
+  // Jika sistem persamaan (ada ;)
   if (rest.indexOf(";") !== -1) {
-    return null;  // tidak ada grafik
+    var pers = rest.split(";").map(function(s){return s.trim();});
+    var xVar = "x";
+    var yVar = "y";
+    var warna = ['#ea4335', '#34a853', '#fbbc04', '#9c27b0', '#1a73e8'];
+    
+    for (var i = 0; i < pers.length; i++) {
+      var p = pers[i];
+      if (p.indexOf("=") === -1) continue;
+      
+      var parts = p.split("=");
+      var kiri = parts[0].trim();
+      var kanan = parts[1].trim();
+      
+      // Ubah ke bentuk y = f(x)
+      // Contoh: x+y=5 → y = 5-x
+      var ekspresi = "";
+      
+      // Cek apakah kiri atau kanan mengandung y
+      if (/\by\b/.test(kiri) && !/\by\b/.test(kanan)) {
+        // y di kiri: y = kanan - (kiri tanpa y)
+        var kiriTanpaY = kiri.replace(/\by\b/g, "0");
+        ekspresi = "(" + sisipKaliImplisit(kanan) + ")-(" + sisipKaliImplisit(kiriTanpaY) + ")";
+      } else if (/\by\b/.test(kanan) && !/\by\b/.test(kiri)) {
+        // y di kanan: y = kiri - (kanan tanpa y)
+        var kananTanpaY = kanan.replace(/\by\b/g, "0");
+        ekspresi = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kananTanpaY) + ")";
+      } else if (/\by\b/.test(kiri) && /\by\b/.test(kanan)) {
+        // y di kedua sisi: pindah ke kiri
+        // Contoh: 2y = x+1 → y = (x+1)/2
+        // Skip dulu
+        continue;
+      } else {
+        // Tidak ada y: gambar sebagai fungsi x
+        ekspresi = "(" + sisipKaliImplisit(kiri) + ")-(" + sisipKaliImplisit(kanan) + ")";
+      }
+      
+      if (ekspresi) {
+        hasil.push({
+          fn: ekspresi,
+          title: p + " → y = " + ekspresi,
+          color: warna[i % warna.length]
+        });
+      }
+    }
+    
+    return hasil.length > 0 ? hasil : null;
   }
   
+  // Persamaan tunggal
   var pers = rest.trim();
   if (pers.indexOf("=") !== -1) {
     var parts = pers.split("=");
@@ -340,14 +386,13 @@ function ekstrakEkspresi(q) {
     var kiriTanpaX = kiri.replace(/\bx\b/g, "");
     var kananTanpaX = kanan.replace(/\bx\b/g, "");
     if (/[a-zA-Z]/.test(kiriTanpaX + kananTanpaX)) {
-      return null;  // ada variabel lain (y, z), jangan gambar
+      return null;
     }
     
     var ekspresi = "(" + kiri + ")-(" + kanan + ")";
     hasil.push({ fn: ekspresi, title: pers, color: '#1a73e8' });
   }
 }
-
   // Bersihkan ekspresi untuk Function Plot
   for (var i = 0; i < hasil.length; i++) {
     hasil[i].fn = hasil[i].fn.replace(/\*\*/g, "^");
