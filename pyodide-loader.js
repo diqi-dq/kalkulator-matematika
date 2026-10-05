@@ -1,53 +1,52 @@
 /* ========================================================
-   PYODIDE LOADER - VERSI DIPERBAIKI
+   PYODIDE LOADER - VERSI LENGKAP & STABIL
    ======================================================== */
 
-// ✅ DEKLARASIKAN VARIABEL GLOBAL
 var py = null;
 var siap = false;
 var sedangMemuat = false;
+var _pyodidePromise = null;
 
 function muatPyodide() {
-  return new Promise(function(resolve, reject) {
+  // ✅ Jika sudah siap, langsung resolve
+  if (siap && py) {
+    return Promise.resolve();
+  }
+
+  // ✅ Jika sedang memuat, kembalikan promise yang sama (hindari duplikasi)
+  if (_pyodidePromise) {
+    return _pyodidePromise;
+  }
+
+  _pyodidePromise = new Promise(function(resolve, reject) {
     var statusEl = document.getElementById('km-status');
-    
-    // ✅ Cek apakah sudah siap
-    if (siap && py) { 
-      resolve(); 
-      return; 
-    }
-    
-    // ✅ Cek apakah sedang memuat
-    if (sedangMemuat) {
-      var cek = setInterval(function() { 
-        if (siap) { 
-          clearInterval(cek); 
-          resolve(); 
-        } 
-      }, 200);
-      return;
+
+    function setStatus(teks, warna) {
+      if (statusEl) {
+        statusEl.innerText = teks;
+        if (warna) statusEl.style.color = warna;
+      }
     }
 
     sedangMemuat = true;
-    statusEl.innerText = "Memuat mesin matematika...";
-    statusEl.style.color = "#e67e22";
+    setStatus("Memuat mesin matematika...", "#e67e22");
 
     var s = document.createElement('script');
     s.src = "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js";
-    
+
     s.onload = function() {
-      statusEl.innerText = "Menginisialisasi Python...";
-      
-      loadPyodide({ 
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/" 
+      setStatus("Menginisialisasi Python...");
+
+      window.loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/"
       }).then(function(p) {
         py = p;
-        statusEl.innerText = "Memuat SymPy...";
+        setStatus("Memuat SymPy...");
         return p.loadPackage(["sympy"]);
-        
+
       }).then(function() {
-        statusEl.innerText = "Menyiapkan fungsi...";
-        
+        setStatus("Menyiapkan fungsi...");
+
         return py.runPythonAsync(`
 import sympy as sp
 import base64
@@ -55,11 +54,9 @@ from sympy import symbols, integrate, diff, solve, factor, expand, simplify, lat
 from sympy import solveset, S, Interval, Union, Intersection, FiniteSet, EmptySet
 from sympy import Function, Symbol, denom, together
 from sympy.calculus.util import continuous_domain
-from math import gcd
 
 x, y, z, t, n, m, k, i = symbols('x y z t n m k i')
 
-# ✅ Gunakan raw string untuk backslash
 BS = chr(92)
 
 def sederhanakan_penuh(expr):
@@ -83,41 +80,6 @@ def sederhanakan_penuh(expr):
             return sp.simplify(expr)
         except Exception:
             return expr
-
-def format_interval_latex(s):
-    hasil = []
-    i = 0
-    n = len(s)
-    while i < n:
-        c = s[i]
-        if c.isdigit() or (c == '-' and i + 1 < n and s[i+1].isdigit()):
-            j = i
-            if c == '-':
-                j += 1
-            ada_koma_desimal = False
-            while j < n and (s[j].isdigit() or s[j] == ','):
-                if s[j] == ',':
-                    if j + 1 < n and s[j+1].isdigit():
-                        ada_koma_desimal = True
-                j += 1
-            segmen = s[i:j]
-            if ada_koma_desimal:
-                k = j
-                while k < n and s[k] == ' ':
-                    k += 1
-                if k < n and s[k] == ',':
-                    hasil.append(segmen)
-                    hasil.append(" ; ")
-                    i = k + 1
-                    while i < n and s[i] == ' ':
-                        i += 1
-                    continue
-            hasil.append(segmen)
-            i = j
-        else:
-            hasil.append(c)
-            i += 1
-    return ''.join(hasil)
 
 def ganti_titik_koma(s):
     hasil = []
@@ -149,18 +111,18 @@ def tampil_matriks(M):
 
 def tampil(expr):
     try:
-        from sympy import Set, Interval, Union, Intersection, FiniteSet, EmptySet, Matrix, Number
-        
+        from sympy import Set, Interval, Union, Intersection, FiniteSet, EmptySet, Matrix
+
         if isinstance(expr, Matrix):
             return tampil_matriks(expr)
-            
+
         if isinstance(expr, (Set, Interval, Union, Intersection, FiniteSet, EmptySet)):
             hasil = latex(expr)
-            return format_interval_latex(hasil)
-            
+            return ganti_titik_koma(hasil)
+
         if expr is S.Reals:
             return latex(expr)
-            
+
         if expr is S.EmptySet:
             return latex(expr)
 
@@ -168,10 +130,10 @@ def tampil(expr):
             return latex(expr)
 
         eksak = latex(expr)
-        
-        if expr.is_Integer or expr.is_Rational:
+
+        if getattr(expr, 'is_Integer', False) or getattr(expr, 'is_Rational', False):
             return eksak
-            
+
         try:
             desimal = N(expr, 10)
             if str(expr) != str(desimal):
@@ -211,7 +173,7 @@ def analisis_kekontinuan(expr, var):
     try:
         expr = sp.together(expr)
         sing_list = []
-        
+
         try:
             d = denom(expr)
             if d != 1:
@@ -257,22 +219,20 @@ def analisis_kekontinuan(expr, var):
         baris.append(BS + "textbf{Analisis Kekontinuan}")
         baris.append(BS + "text{Fungsi: } y = " + latex(expr))
         baris.append(BS + "textbf{Status Kekontinuan:}")
-        baris.append(BS + "bullet" + BS + "; " + kontinu_R + BS + "; " + BS + "text{(asumsi fungsi dari real ke real)}")
-        baris.append(BS + "bullet" + BS + "; " + BS + "text{kontinu di domainnya (asumsi fungsi dari real ke real)}")
+        baris.append(BS + "bullet" + BS + "; " + kontinu_R)
         baris.append(BS + "textbf{Titik Diskontinu:}")
-        
+
         if len(sing_list) == 0:
             baris.append(BS + "text{Tidak ada titik diskontinu.}")
         else:
             baris.append(sing_latex)
-            baris.append(BS + "text{(diskontinu tak hingga)}")
-            
+
         baris.append(BS + "textbf{Domain:}")
         baris.append(dom_latex)
 
         hasil_latex = BS + "begin{gathered} " + (" " + BS + BS + " ").join(baris) + " " + BS + "end{gathered}"
         return "B64:" + base64.b64encode(hasil_latex.encode('utf-8')).decode('ascii')
-        
+
     except Exception as e:
         pesan = BS + "text{Gagal menganalisis: " + str(e).replace("_", BS + "_") + "}"
         return "B64:" + base64.b64encode(pesan.encode('utf-8')).decode('ascii')
@@ -298,27 +258,6 @@ def tabel_nilai(expr, var, a, b, langkah=1):
         iter_count += 1
     return hasil
 
-def tabel_nilai_desimal(expr, var, a, b, langkah=1):
-    a = float(a)
-    b = float(b)
-    langkah = float(langkah)
-    if langkah <= 0:
-        langkah = 1
-    hasil = []
-    x_val = a
-    max_iter = 1000
-    iter_count = 0
-    while x_val <= b + 1e-9 and iter_count < max_iter:
-        try:
-            nilai = expr.subs(var, x_val)
-            nilai_desimal = N(nilai, 6)
-            hasil.append((x_val, nilai_desimal))
-        except Exception:
-            hasil.append((x_val, "Error"))
-        x_val = round(x_val + langkah, 10)
-        iter_count += 1
-    return hasil
-
 def tampil_tabel(data, var_name="x"):
     try:
         baris = []
@@ -336,7 +275,7 @@ def tampil_tabel(data, var_name="x"):
         header = BS + "text{" + var_name + "} & " + BS + "text{f(" + var_name + ")}"
         isi = (" " + BS + BS + " ").join(baris)
         return BS + "begin{array}{cc} " + header + " " + BS + BS + " " + BS + "hline " + isi + " " + BS + "end{array}"
-    except Exception as e:
+    except Exception:
         return str(data)
 
 def matriks_gell_mann(n):
@@ -353,70 +292,65 @@ def matriks_gell_mann(n):
     if n == 8: return sp.Matrix([[1,0,0],[0,1,0],[0,0,-2]]) / sp.sqrt(3)
     return sp.Matrix([[0]])
         `);
-        
+
       }).then(function() {
-        statusEl.innerText = "✓ Siap";
-        statusEl.style.color = "green";
+        setStatus("✓ Siap", "green");
         siap = true;
         sedangMemuat = false;
         resolve();
-        
+
       }).catch(function(err) {
         console.error("Error loading Pyodide:", err);
-        statusEl.innerText = "❌ Gagal: " + err.message;
-        statusEl.style.color = "red";
+        setStatus("❌ Gagal: " + err.message, "red");
+        siap = false;
         sedangMemuat = false;
+        _pyodidePromise = null;
         reject(err);
       });
     };
-    
+
     s.onerror = function() {
-      statusEl.innerText = "❌ Gagal mengunduh Pyodide";
-      statusEl.style.color = "red";
+      setStatus("❌ Gagal mengunduh Pyodide", "red");
+      siap = false;
       sedangMemuat = false;
-      reject(new Error("Gagal mengunduh Pyodide"));
+      _pyodidePromise = null;
+      reject(new Error("Gagal mengunduh skrip Pyodide dari CDN"));
     };
-    
+
     document.head.appendChild(s);
   });
+
+  return _pyodidePromise;
 }
 
-// ✅ FUNGSI BANTUAN UNTUK DECODE BASE64
+// ✅ Decode Base64
 function decodeB64(str) {
-  if (str && str.startsWith("B64:")) {
+  if (typeof str === 'string' && str.startsWith("B64:")) {
     try {
       return atob(str.substring(4));
-    } catch(e) {
+    } catch (e) {
       return str;
     }
   }
   return str;
 }
 
-// ✅ FUNGSI UNTUK MENJALANKAN PYTHON
+// ✅ Jalankan Python langsung (return value)
 function jalankanPython(kode) {
-  if (!py) {
-    return Promise.reject(new Error("Pyodide belum dimuat"));
+  if (!py || !siap) {
+    return Promise.reject(new Error("Pyodide belum siap"));
   }
   return py.runPythonAsync(kode);
 }
 
-// ✅ FUNGSI UNTUK MEMANGGIL FUNGSI PYTHON
-function panggilFungsiPython(namaFungsi, argumen) {
-  if (!py) {
-    return Promise.reject(new Error("Pyodide belum dimuat"));
+// ✅ Panggil fungsi Python — TANPA setStdout, pakai return value
+function panggilFungsiPython(namaFungsi, ekspresiString) {
+  if (!py || !siap) {
+    return Promise.reject(new Error("Pyodide belum siap dipanggil"));
   }
-  
-  var kode = "print(" + namaFungsi + "(" + argumen + "))";
-  
-  var output = "";
-  py.setStdout({
-    batched: function(text) {
-      output += text + "\n";
-    }
-  });
-  
-  return py.runPythonAsync(kode).then(function() {
-    return decodeB64(output.trim());
+
+  var kode = namaFungsi + "(" + ekspresiString + ")";
+  return py.runPythonAsync(kode).then(function(hasil) {
+    return decodeB64(String(hasil));
   });
 }
