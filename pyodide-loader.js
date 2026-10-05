@@ -1,31 +1,53 @@
 /* ========================================================
-   PYODIDE LOADER
-   Memuat Pyodide + SymPy, dan menyiapkan fungsi Python.
+   PYODIDE LOADER - VERSI DIPERBAIKI
    ======================================================== */
+
+// ✅ DEKLARASIKAN VARIABEL GLOBAL
+var py = null;
+var siap = false;
+var sedangMemuat = false;
 
 function muatPyodide() {
   return new Promise(function(resolve, reject) {
     var statusEl = document.getElementById('km-status');
-    if (siap && py) { resolve(); return; }
+    
+    // ✅ Cek apakah sudah siap
+    if (siap && py) { 
+      resolve(); 
+      return; 
+    }
+    
+    // ✅ Cek apakah sedang memuat
     if (sedangMemuat) {
-      var cek = setInterval(function() { if (siap) { clearInterval(cek); resolve(); } }, 200);
+      var cek = setInterval(function() { 
+        if (siap) { 
+          clearInterval(cek); 
+          resolve(); 
+        } 
+      }, 200);
       return;
     }
 
     sedangMemuat = true;
-    statusEl.innerText = "Memuat mesin matematika, Harap tunggu... ";
+    statusEl.innerText = "Memuat mesin matematika...";
     statusEl.style.color = "#e67e22";
 
     var s = document.createElement('script');
     s.src = "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js";
+    
     s.onload = function() {
       statusEl.innerText = "Menginisialisasi Python...";
-      loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/" }).then(function(p) {
+      
+      loadPyodide({ 
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/" 
+      }).then(function(p) {
         py = p;
         statusEl.innerText = "Memuat SymPy...";
         return p.loadPackage(["sympy"]);
+        
       }).then(function() {
         statusEl.innerText = "Menyiapkan fungsi...";
+        
         return py.runPythonAsync(`
 import sympy as sp
 import base64
@@ -34,9 +56,11 @@ from sympy import solveset, S, Interval, Union, Intersection, FiniteSet, EmptySe
 from sympy import Function, Symbol, denom, together
 from sympy.calculus.util import continuous_domain
 from math import gcd
+
 x, y, z, t, n, m, k, i = symbols('x y z t n m k i')
 
-BS = chr(92)  # backslash character
+# ✅ Gunakan raw string untuk backslash
+BS = chr(92)
 
 def sederhanakan_penuh(expr):
     try:
@@ -126,31 +150,30 @@ def tampil_matriks(M):
 def tampil(expr):
     try:
         from sympy import Set, Interval, Union, Intersection, FiniteSet, EmptySet, Matrix, Number
-        # Matriks: tampilkan matriks
+        
         if isinstance(expr, Matrix):
             return tampil_matriks(expr)
-        # Himpunan: tampilkan interval
+            
         if isinstance(expr, (Set, Interval, Union, Intersection, FiniteSet, EmptySet)):
             hasil = latex(expr)
             return format_interval_latex(hasil)
+            
         if expr is S.Reals:
             return latex(expr)
+            
         if expr is S.EmptySet:
             return latex(expr)
 
-        # Ekspresi dengan variabel: tampilkan simbolik saja
         if hasattr(expr, 'free_symbols') and len(expr.free_symbols) > 0:
             return latex(expr)
 
-        # Ekspresi tanpa variabel: tampilkan eksak + desimal (jika beda)
         eksak = latex(expr)
-        # Jika bilangan bulat atau rasional, tampilkan eksak saja
+        
         if expr.is_Integer or expr.is_Rational:
             return eksak
-        # Coba konversi ke desimal
+            
         try:
             desimal = N(expr, 10)
-            # Jika hasil desimal berbeda dari eksak, tampilkan keduanya
             if str(expr) != str(desimal):
                 desimal_latex = latex(desimal).replace('.', ',')
                 return eksak + " " + BS + "approx " + desimal_latex
@@ -162,19 +185,14 @@ def tampil(expr):
             return latex(expr)
         except Exception:
             return str(expr)
-            
+
 def tampil_double(expr):
-    """Tampilkan bentuk asli dan bentuk expand."""
     try:
-        # Bentuk asli
         asli = latex(expr)
-        # Bentuk expand
         expanded = sp.expand(expr)
         exp_latex = latex(expanded)
-        # Jika sama, tampilkan satu saja
         if asli == exp_latex:
             return asli
-        # Jika beda, tampilkan keduanya
         return asli + " = " + exp_latex
     except Exception:
         try:
@@ -192,8 +210,8 @@ def tampil_deret(expr):
 def analisis_kekontinuan(expr, var):
     try:
         expr = sp.together(expr)
-
         sing_list = []
+        
         try:
             d = denom(expr)
             if d != 1:
@@ -242,16 +260,19 @@ def analisis_kekontinuan(expr, var):
         baris.append(BS + "bullet" + BS + "; " + kontinu_R + BS + "; " + BS + "text{(asumsi fungsi dari real ke real)}")
         baris.append(BS + "bullet" + BS + "; " + BS + "text{kontinu di domainnya (asumsi fungsi dari real ke real)}")
         baris.append(BS + "textbf{Titik Diskontinu:}")
+        
         if len(sing_list) == 0:
             baris.append(BS + "text{Tidak ada titik diskontinu.}")
         else:
             baris.append(sing_latex)
             baris.append(BS + "text{(diskontinu tak hingga)}")
+            
         baris.append(BS + "textbf{Domain:}")
         baris.append(dom_latex)
 
         hasil_latex = BS + "begin{gathered} " + (" " + BS + BS + " ").join(baris) + " " + BS + "end{gathered}"
         return "B64:" + base64.b64encode(hasil_latex.encode('utf-8')).decode('ascii')
+        
     except Exception as e:
         pesan = BS + "text{Gagal menganalisis: " + str(e).replace("_", BS + "_") + "}"
         return "B64:" + base64.b64encode(pesan.encode('utf-8')).decode('ascii')
@@ -332,25 +353,70 @@ def matriks_gell_mann(n):
     if n == 8: return sp.Matrix([[1,0,0],[0,1,0],[0,0,-2]]) / sp.sqrt(3)
     return sp.Matrix([[0]])
         `);
+        
       }).then(function() {
-        statusEl.innerText = "Siap";
+        statusEl.innerText = "✓ Siap";
         statusEl.style.color = "green";
         siap = true;
         sedangMemuat = false;
         resolve();
+        
       }).catch(function(err) {
-        statusEl.innerText = "Gagal memuat";
+        console.error("Error loading Pyodide:", err);
+        statusEl.innerText = "❌ Gagal: " + err.message;
         statusEl.style.color = "red";
         sedangMemuat = false;
         reject(err);
       });
     };
+    
     s.onerror = function() {
-      statusEl.innerText = "Gagal mengunduh Pyodide";
+      statusEl.innerText = "❌ Gagal mengunduh Pyodide";
       statusEl.style.color = "red";
       sedangMemuat = false;
       reject(new Error("Gagal mengunduh Pyodide"));
     };
+    
     document.head.appendChild(s);
+  });
+}
+
+// ✅ FUNGSI BANTUAN UNTUK DECODE BASE64
+function decodeB64(str) {
+  if (str && str.startsWith("B64:")) {
+    try {
+      return atob(str.substring(4));
+    } catch(e) {
+      return str;
+    }
+  }
+  return str;
+}
+
+// ✅ FUNGSI UNTUK MENJALANKAN PYTHON
+function jalankanPython(kode) {
+  if (!py) {
+    return Promise.reject(new Error("Pyodide belum dimuat"));
+  }
+  return py.runPythonAsync(kode);
+}
+
+// ✅ FUNGSI UNTUK MEMANGGIL FUNGSI PYTHON
+function panggilFungsiPython(namaFungsi, argumen) {
+  if (!py) {
+    return Promise.reject(new Error("Pyodide belum dimuat"));
+  }
+  
+  var kode = "print(" + namaFungsi + "(" + argumen + "))";
+  
+  var output = "";
+  py.setStdout({
+    batched: function(text) {
+      output += text + "\n";
+    }
+  });
+  
+  return py.runPythonAsync(kode).then(function() {
+    return decodeB64(output.trim());
   });
 }
