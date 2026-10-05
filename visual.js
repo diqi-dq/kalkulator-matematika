@@ -399,7 +399,7 @@ function konversiKeY(persamaan) {
   // 2. Skip jika y berpangkat > 1
   if (/y\s*(\^|\*\*)\s*([2-9]|\d{2,})/.test(kiri + kanan)) return null;
 
-  // 3. Validasi hanya ada variabel x dan y (abaikan nama fungsi matematika)
+  // 3. Validasi hanya ada variabel x dan y
   var bersihkanFungsi = (kiri + kanan).replace(/\b(sin|cos|tan|asin|acos|atan|sinh|cosh|tanh|log|ln|sqrt|exp|pi)\b/gi, "");
   var variabelLain = bersihkanFungsi.replace(/[0-9\+\-\*\/\^\(\)\=\s]/g, "").replace(/[xy]/gi, "");
   if (variabelLain.length > 0) return null;
@@ -414,27 +414,34 @@ function konversiKeY(persamaan) {
   }
   if (!yDiKiri && !yDiKanan) return null;
 
-  // 5. Isolasi y (Tangani kasus koefisien dengan atau tanpa *)
+  // 5. Isolasi y
   var sisiY = yDiKiri ? kiri : kanan;
   var sisiLain = yDiKiri ? kanan : kiri;
 
-  var matchY = sisiY.match(/([+-]?)\s*(\d*\.?\d*)\s*\*?\s*\by\b/);
+  // Regex BARU: tanpa \b di depan y
+  var matchY = sisiY.match(/([+-]?)\s*(\d*\.?\d*)\s*\*?\s*y/);
   if (!matchY) return null;
 
   var tandaY = matchY[1] === "-" ? "-" : "+";
   var koefY = matchY[2] && matchY[2] !== "" ? matchY[2] : "1";
 
-  // Hapus term y dari sisinya
-  var sisaSisiY = sisiY.replace(/([+-]?)\s*\d*\.?\d*\s*\*?\s*\by\b/g, "").trim();
+  // Hapus term y dari sisiY
+  var sisaSisiY = sisiY.replace(/([+-]?)\s*\d*\.?\d*\s*\*?\s*y/g, "").trim();
   sisaSisiY = sisaSisiY.replace(/^[+-]\s*/, "").replace(/[+-]\s*$/, "").trim();
   if (sisaSisiY === "") sisaSisiY = "0";
 
-  var pembilang = "(" + sisipKaliImplisit(sisiLain) + ")-(" + sisipKaliImplisit(sisaSisiY) + ")";
+  var pembilang;
+  if (sisaSisiY === "0") {
+    pembilang = sisipKaliImplisit(sisiLain);
+  } else {
+    pembilang = "(" + sisipKaliImplisit(sisiLain) + ")-(" + sisipKaliImplisit(sisaSisiY) + ")";
+  }
+
   if (tandaY === "-") pembilang = "(-1)*(" + pembilang + ")";
 
   var hasilEkspresi = (koefY === "1") ? pembilang : "(" + pembilang + ")/(" + koefY + ")";
 
-  // Pembersihan pola nol murni
+  // Bersihkan pola nol murni
   hasilEkspresi = hasilEkspresi.replace(/\+\s*0\b/g, "")
                               .replace(/-\s*0\b/g, "")
                               .replace(/\(\s*0\s*\)/g, "0");
