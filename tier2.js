@@ -369,17 +369,17 @@ function jalankanPerintah(q, out, inputAsli) {
     else if (lower.startsWith("sinus hiperbolik")) {
       var e = q.replace(/^sinus hiperbolik\s*/i, "").trim();
       e = sisipKaliImplisit(e);
-      cmd += "print(tampil_double(sp.sinh(" + e + ")))";
+      cmd += "print(tampil(sp.sinh(" + e + ")))";
     }
     else if (lower.startsWith("kosinus hiperbolik")) {
       var e = q.replace(/^kosinus hiperbolik\s*/i, "").trim();
       e = sisipKaliImplisit(e);
-      cmd += "print(tampil_double(sp.cosh(" + e + ")))";
+      cmd += "print(tampil(sp.cosh(" + e + ")))";
     }
     else if (lower.startsWith("tangen hiperbolik")) {
       var e = q.replace(/^tangen hiperbolik\s*/i, "").trim();
       e = sisipKaliImplisit(e);
-      cmd += "print(tampil_double(sp.tanh(" + e + ")))";
+      cmd += "print(tampil(sp.tanh(" + e + ")))";
     }
     else if (lower.startsWith("radian ke derajat")) {
       var e = q.replace(/^radian ke derajat\s*/i, "").trim();
