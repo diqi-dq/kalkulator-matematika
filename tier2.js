@@ -721,6 +721,35 @@ function ekstrakEkspresi(q) {
   var hasil = [];  // Array of { fn, title, color }
 
   // Trigonometri — hanya output
+if (lower.startsWith("sinus hiperbolik")) {
+  var e = q.replace(/^sinus hiperbolik\s*/i, "").trim();
+  var eTanpaPi = e.replace(/\bpi\b/gi, "");
+  if (!/[a-zA-Z]/.test(eTanpaPi)) {
+    hasil.push({ fn: 'sinh(x)', title: 'sinh(x)', color: '#1a73e8' });
+  } else {
+    hasil.push({ fn: 'sinh(' + sisipKaliImplisit(e) + ')', title: 'sinh(' + e + ')', color: '#1a73e8' });
+  }
+}
+else if (lower.startsWith("kosinus hiperbolik")) {
+  var e = q.replace(/^kosinus hiperbolik\s*/i, "").trim();
+  var eTanpaPi = e.replace(/\bpi\b/gi, "");
+  if (!/[a-zA-Z]/.test(eTanpaPi)) {
+    hasil.push({ fn: 'cosh(x)', title: 'cosh(x)', color: '#1a73e8' });
+  } else {
+    hasil.push({ fn: 'cosh(' + sisipKaliImplisit(e) + ')', title: 'cosh(' + e + ')', color: '#1a73e8' });
+  }
+}
+else if (lower.startsWith("tangen hiperbolik")) {
+  var e = q.replace(/^tangen hiperbolik\s*/i, "").trim();
+  var eTanpaPi = e.replace(/\bpi\b/gi, "");
+  if (!/[a-zA-Z]/.test(eTanpaPi)) {
+    hasil.push({ fn: 'tanh(x)', title: 'tanh(x)', color: '#1a73e8' });
+  } else {
+    hasil.push({ fn: 'tanh(' + sisipKaliImplisit(e) + ')', title: 'tanh(' + e + ')', color: '#1a73e8' });
+  }
+}
+else if (lower.startsWith("sinus")) {
+  
 if (lower.startsWith("sinus")) {
   var e = q.replace(/^sinus\s*/i, "").trim();
   // Cek apakah e mengandung variabel (bukan pi)
