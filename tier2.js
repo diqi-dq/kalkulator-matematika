@@ -528,7 +528,7 @@ window.kmJalankan = function() {
 
   // Tier 2: Pyodide (simbolik)
   if (!siap) {
-    out.innerHTML = '<em>Memuat mesin simbolik... Mohon tunggu.</em>';
+    out.innerHTML = '<em>Memuat mesin matematika.. Mohon tunggu.</em>';
     muatPyodide().then(function() {
       jalankanPerintah(q, out, inputAsli);
     }).catch(function(err) {
@@ -720,28 +720,34 @@ function ekstrakEkspresi(q) {
   var hasil = [];  // Array of { fn, title, color }
 
   // Trigonometri — hanya output
-  if (lower.startsWith("sinus")) {
-    var e = q.replace(/^sinus\s*/i, "").trim();
-    if (!/[a-zA-Z]/.test(e)) {
-      hasil.push({ fn: 'sin(x)', title: 'sin(x)', color: '#1a73e8' });
-    } else {
-      hasil.push({ fn: 'sin(' + sisipKaliImplisit(e) + ')', title: 'sin(' + e + ')', color: '#1a73e8' });
-    }
-  } else if (lower.startsWith("kosinus")) {
-    var e = q.replace(/^kosinus\s*/i, "").trim();
-    if (!/[a-zA-Z]/.test(e)) {
-      hasil.push({ fn: 'cos(x)', title: 'cos(x)', color: '#1a73e8' });
-    } else {
-      hasil.push({ fn: 'cos(' + sisipKaliImplisit(e) + ')', title: 'cos(' + e + ')', color: '#1a73e8' });
-    }
-  } else if (lower.startsWith("tangen")) {
-    var e = q.replace(/^tangen\s*/i, "").trim();
-    if (!/[a-zA-Z]/.test(e)) {
-      hasil.push({ fn: 'tan(x)', title: 'tan(x)', color: '#1a73e8' });
-    } else {
-      hasil.push({ fn: 'tan(' + sisipKaliImplisit(e) + ')', title: 'tan(' + e + ')', color: '#1a73e8' });
-    }
+if (lower.startsWith("sinus")) {
+  var e = q.replace(/^sinus\s*/i, "").trim();
+  // Cek apakah e mengandung variabel (bukan pi)
+  var eTanpaPi = e.replace(/\bpi\b/gi, "");
+  if (!/[a-zA-Z]/.test(eTanpaPi)) {
+    // Konstanta (pi/6, 30, dll.) → gambar sin(x)
+    hasil.push({ fn: 'sin(x)', title: 'sin(x)', color: '#1a73e8' });
+  } else {
+    // Ada variabel → gambar sin(e)
+    hasil.push({ fn: 'sin(' + sisipKaliImplisit(e) + ')', title: 'sin(' + e + ')', color: '#1a73e8' });
   }
+} else if (lower.startsWith("kosinus")) {
+  var e = q.replace(/^kosinus\s*/i, "").trim();
+  var eTanpaPi = e.replace(/\bpi\b/gi, "");
+  if (!/[a-zA-Z]/.test(eTanpaPi)) {
+    hasil.push({ fn: 'cos(x)', title: 'cos(x)', color: '#1a73e8' });
+  } else {
+    hasil.push({ fn: 'cos(' + sisipKaliImplisit(e) + ')', title: 'cos(' + e + ')', color: '#1a73e8' });
+  }
+} else if (lower.startsWith("tangen")) {
+  var e = q.replace(/^tangen\s*/i, "").trim();
+  var eTanpaPi = e.replace(/\bpi\b/gi, "");
+  if (!/[a-zA-Z]/.test(eTanpaPi)) {
+    hasil.push({ fn: 'tan(x)', title: 'tan(x)', color: '#1a73e8' });
+  } else {
+    hasil.push({ fn: 'tan(' + sisipKaliImplisit(e) + ')', title: 'tan(' + e + ')', color: '#1a73e8' });
+  }
+}
   // Kalkulus — hanya output
   else if (lower.startsWith("integral")) {
     var rest = q.replace(/^integral\s*/i, "").trim();
