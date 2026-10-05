@@ -8,12 +8,10 @@ var sedangMemuat = false;
 var _pyodidePromise = null;
 
 function muatPyodide() {
-  // ✅ Jika sudah siap, langsung resolve
   if (siap && py) {
     return Promise.resolve();
   }
 
-  // ✅ Jika sedang memuat, kembalikan promise yang sama (hindari duplikasi)
   if (_pyodidePromise) {
     return _pyodidePromise;
   }
@@ -258,6 +256,28 @@ def tabel_nilai(expr, var, a, b, langkah=1):
         iter_count += 1
     return hasil
 
+# ✅ TAMBAHAN: tabel_nilai_desimal
+def tabel_nilai_desimal(expr, var, a, b, langkah=1):
+    a = float(a)
+    b = float(b)
+    langkah = float(langkah)
+    if langkah <= 0:
+        langkah = 1
+    hasil = []
+    x_val = a
+    max_iter = 1000
+    iter_count = 0
+    while x_val <= b + 1e-9 and iter_count < max_iter:
+        try:
+            nilai = expr.subs(var, x_val)
+            nilai_desimal = N(nilai, 6)
+            hasil.append((x_val, nilai_desimal))
+        except Exception:
+            hasil.append((x_val, "Error"))
+        x_val = round(x_val + langkah, 10)
+        iter_count += 1
+    return hasil
+
 def tampil_tabel(data, var_name="x"):
     try:
         baris = []
@@ -323,7 +343,6 @@ def matriks_gell_mann(n):
   return _pyodidePromise;
 }
 
-// ✅ Decode Base64
 function decodeB64(str) {
   if (typeof str === 'string' && str.startsWith("B64:")) {
     try {
@@ -335,7 +354,6 @@ function decodeB64(str) {
   return str;
 }
 
-// ✅ Jalankan Python langsung (return value)
 function jalankanPython(kode) {
   if (!py || !siap) {
     return Promise.reject(new Error("Pyodide belum siap"));
@@ -343,7 +361,6 @@ function jalankanPython(kode) {
   return py.runPythonAsync(kode);
 }
 
-// ✅ Panggil fungsi Python — TANPA setStdout, pakai return value
 function panggilFungsiPython(namaFungsi, ekspresiString) {
   if (!py || !siap) {
     return Promise.reject(new Error("Pyodide belum siap dipanggil"));
