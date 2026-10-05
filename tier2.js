@@ -555,7 +555,7 @@ function tambahVisualOtomatis(q, out) {
     "integral", "turunan", "turunan2", "turunan kedua",
     "limit",
     "sederhanakan", "faktorkan", "jabarkan",
-    "pecahkan"
+    "pecahkan",
       // Operasi fungsi
     "jumlah fungsi", "kurang fungsi", "kali fungsi", "bagi fungsi",
     "komposisi fungsi", "komposisi balik"
