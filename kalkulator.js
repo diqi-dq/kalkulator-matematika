@@ -77,10 +77,37 @@ var daftarPerintah = [
   { kategori: "Bilangan", nama: "Bilangan prima", format: "bilangan prima n", contoh: "bilangan prima 20", ket: "Prima ≤ n." },
   { kategori: "Bilangan", nama: "Desimal", format: "desimal <ekspresi>", contoh: "desimal 1/3", ket: "Konversi ke desimal." },
   { kategori: "Bilangan", nama: "Biner", format: "biner <bilangan bulat>", contoh: "biner 10", ket: "Konversi ke biner." },
-  { kategori: "Bilangan", nama: "FPB", format: "fpb <a>; <b>", contoh: "fpb 12; 18", ket: "Faktor Persekutuan Terbesar." },
-  { kategori: "Bilangan", nama: "KPK", format: "kpk <a>; <b>", contoh: "kpk 4; 6", ket: "Kelipatan Persekutuan Terkecil." },
+  { 
+  kategori: "Bilangan", 
+  nama: "FPB", 
+  format: "fpb <a>; <b> [; <c> ...]", 
+  contoh: "fpb 12; 18; 24", 
+  ket: "Faktor Persekutuan Terbesar dari 2 atau lebih bilangan." 
+},
+{ 
+  kategori: "Bilangan", 
+  nama: "KPK", 
+  format: "kpk <a>; <b> [; <c> ...]", 
+  contoh: "kpk 4; 6; 8", 
+  ket: "Kelipatan Persekutuan Terkecil dari 2 atau lebih bilangan." 
+},
+{ 
+  kategori: "Bilangan", 
+  nama: "FPB detail", 
+  format: "fpb detail <a>; <b> [; <c> ...]", 
+  contoh: "fpb detail 12; 18", 
+  ket: "FPB dengan langkah faktorisasi prima." 
+},
+{ 
+  kategori: "Bilangan", 
+  nama: "Faktorisasi prima", 
+  format: "faktorisasi <n>", 
+  contoh: "faktorisasi 60", 
+  ket: "Faktorisasi bilangan prima." 
+},
+  
   { kategori: "Bilangan", nama: "Cek prima", format: "prima? <n>", contoh: "prima? 17", ket: "Cek apakah bilangan prima." },
-  { kategori: "Bilangan", nama: "Faktorisasi prima", format: "faktorisasi <n>", contoh: "faktorisasi 60", ket: "Faktorisasi bilangan prima." },
+    
   { kategori: "Bilangan", nama: "Ke biner", format: "ke biner <n>", contoh: "ke biner 10", ket: "Konversi ke biner." },
   { kategori: "Bilangan", nama: "Ke oktal", format: "ke oktal <n>", contoh: "ke oktal 10", ket: "Konversi ke oktal." },
   { kategori: "Bilangan", nama: "Ke heksadesimal", format: "ke heksadesimal <n>", contoh: "ke heksadesimal 255", ket: "Konversi ke heksadesimal." },
