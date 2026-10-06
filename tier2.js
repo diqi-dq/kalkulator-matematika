@@ -9,6 +9,20 @@
    - visual.js (tambahVisualOtomatis)
    ======================================================== */
 
+// ✅ FIX: Escape string untuk Python
+function escapePy(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
+}
+
+   // ✅ FIX: Buffer stdout global dengan guard
+var _stdoutBuffer = "";
+var _stdoutLock = false;
+
 function paksaDesimalHiperbolik(q) {
   var lower = q.toLowerCase();
 
@@ -53,7 +67,7 @@ function jalankanPerintah(q, out, inputAsli) {
       var bNum = konversiAngka(parts[3]);
       var langkahNum = parts.length >= 5 ? konversiAngka(parts[4]) : 1;
       if (aNum === null || bNum === null || langkahNum === null || langkahNum <= 0) { out.innerHTML = '❌ Nilai a, b, atau langkah tidak valid.'; return; }
-      cmd += "ekspresi_tabel = sp.sympify('" + ekspresi + "')\n";
+      cmd += "ekspresi_tabel = sp.sympify('" + escapePy(ekspresi) + "')\n";
       cmd += "data_tabel = tabel_nilai_desimal(ekspresi_tabel, sp.Symbol('" + varName + "'), " + aNum + ", " + bNum + ", " + langkahNum + ")\n";
       cmd += "print(tampil_tabel(data_tabel, '" + varName + "'))";
     }
@@ -468,16 +482,28 @@ function jalankanPerintah(q, out, inputAsli) {
     return;
   }
 
-  var res = "";
-  py.setStdout({ batched: function(t) { res += t + "\n"; } });
+// ✅ FIX: Guard — hanya boleh 1 eksekusi sekaligus
+if (_stdoutLock) {
+  out.innerHTML = '<em>Sedang menghitung, mohon tunggu...</em>';
+  return;
+}
+_stdoutLock = true;
+_stdoutBuffer = "";
+
+py.setStdout({
+  batched: function(t) {
+    _stdoutBuffer += t + "\n";
+  }
+});
 
   var timeoutId = setTimeout(function() {
     out.innerHTML = '<span style="color:#ea4335">⏱️ Perhitungan terlalu lama (melebihi 20 detik). Coba ekspresi yang lebih sederhana.</span>';
   }, 20000);
 
-  py.runPythonAsync(cmd).then(function() {
-    clearTimeout(timeoutId);
-    var hasil = res.trim() || "";
+py.runPythonAsync(cmd).then(function() {
+  clearTimeout(timeoutId);
+  _stdoutLock = false;  // ✅ FIX: Lepas lock
+  var hasil = _stdoutBuffer.trim() || "";
     if (!hasil) { out.innerHTML = '<em>(tidak ada output)</em>'; return; }
 
     var latex = hasil;
@@ -500,26 +526,32 @@ function jalankanPerintah(q, out, inputAsli) {
       var latexFormatted = latex.replace(/(\d)\.(\d)/g, '$1,$2');
 
       if (window.katex) {
-        try {
-          out.innerHTML = katex.renderToString(latexFormatted, {
-            throwOnError: false,
-            displayMode: true
-          });
-        } catch(e) {
-          out.innerHTML = '<pre style="white-space:pre-wrap; word-break:break-word;">' + escapeHtml(latexFormatted) + '</pre>';
-        }
-      } else if (percobaan < 25) {
+  try {
+    out.innerHTML = katex.renderToString(latexFormatted, {
+      throwOnError: false,
+      displayMode: true
+    });
+    // ✅ FIX: Panggil visual SETELAH render selesai
+    setTimeout(function() {
+      if (typeof tambahVisualOtomatis === 'function') {
+        tambahVisualOtomatis(inputAsli || q, out);
+      }
+    }, 100);
+  } catch(e) {
+    out.innerHTML = '<pre>...</pre>';
+  }
+} else if (percobaan < 25) {
         setTimeout(function() { cobaRender(percobaan + 1); }, 200);
       } else {
         out.innerHTML = '<pre style="white-space:pre-wrap; word-break:break-word;">' + escapeHtml(latexFormatted) + '</pre>';
       }
     };
     cobaRender(0);
-    setTimeout(function() {
-      tambahVisualOtomatis(inputAsli || q, out);
-    }, 100);
-  }).catch(function(e) {
-    clearTimeout(timeoutId);
+
+
+}).catch(function(e) {
+  clearTimeout(timeoutId);
+  _stdoutLock = false;  // ✅ FIX: Lepas lock di error
     out.innerHTML = '<span style="color:#ea4335">Kesalahan: ' + escapeHtml(e.message) + '</span>\n\n' +
       '<small style="color:#666">Kode: <code>' + escapeHtml(cmd) + '</code></small>';
   });

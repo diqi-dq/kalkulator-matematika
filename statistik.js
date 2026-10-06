@@ -6,18 +6,45 @@ function jalankanStatistik(q, out) {
   var lower = q.toLowerCase();
 
   // --- FUNGSI BANTU STATISTIK ---
-  function parseData(str) {
-    var s = String(str).trim();
-    if (!s) return null;
-    var parts = s.split(/[,;\s]+/).filter(function(x){return x.length > 0;});
-    var data = [];
-    for (var i = 0; i < parts.length; i++) {
-      var v = parseFloat(parts[i]);
-      if (isNaN(v)) return null;
-      data.push(v);
-    }
-    return data;
+function parseData(str) {
+  var s = String(str).trim();
+  if (!s) return null;
+
+  // ✅ FIX: Strategi parsing yang lebih cerdas
+  // 1. Jika ada ';' → itu pemisah data
+  // 2. Jika ada spasi → itu pemisah data
+  // 3. Jika hanya koma → cek pola:
+  //    - "digit, digit" → pemisah
+  //    - "digit,digit" → desimal
+
+  var parts;
+  if (s.indexOf(';') !== -1) {
+    parts = s.split(';');
+  } else if (/\s/.test(s)) {
+    parts = s.split(/\s+/);
+  } else if (/\d,\s/.test(s)) {
+    // Ada pola "digit, spasi" → koma adalah pemisah
+    parts = s.split(/,\s*/);
+  } else if (/\d,\d/.test(s)) {
+    // Ada pola "digit,digit" → koma adalah desimal
+    // Tapi ini berarti hanya ada satu angka
+    parts = [s];
+  } else {
+    parts = s.split(',');
   }
+
+  var data = [];
+  for (var i = 0; i < parts.length; i++) {
+    var v = parts[i].trim();
+    if (v === '') continue;
+    // ✅ FIX: Konversi koma desimal ke titik
+    v = v.replace(',', '.');
+    var num = parseFloat(v);
+    if (isNaN(num)) return null;
+    data.push(num);
+  }
+  return data;
+}
 
   function rataRata(data) {
     var jumlah = 0;

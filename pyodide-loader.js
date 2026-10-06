@@ -111,35 +111,39 @@ def tampil(expr):
     try:
         from sympy import Set, Interval, Union, Intersection, FiniteSet, EmptySet, Matrix
 
+        # Matrix
         if isinstance(expr, Matrix):
             return tampil_matriks(expr)
 
+        # Set/Interval
         if isinstance(expr, (Set, Interval, Union, Intersection, FiniteSet, EmptySet)):
-            hasil = latex(expr)
-            return ganti_titik_koma(hasil)
+            return ganti_titik_koma(latex(expr))
 
-        if expr is S.Reals:
-            return latex(expr)
-
-        if expr is S.EmptySet:
-            return latex(expr)
-
+        # Simbolik (ada variabel)
         if hasattr(expr, 'free_symbols') and len(expr.free_symbols) > 0:
             return latex(expr)
 
+        # Eksak
         eksak = latex(expr)
 
+        # Integer/Rational → return eksak
         if getattr(expr, 'is_Integer', False) or getattr(expr, 'is_Rational', False):
             return eksak
 
+        # ✅ FIX: Float → langsung konversi
+        if getattr(expr, 'is_Float', False):
+            return eksak.replace('.', ',')
+
+        # ✅ FIX: Selain itu → coba desimal
         try:
             desimal = N(expr, 10)
-            if str(expr) != str(desimal):
-                desimal_latex = latex(desimal).replace('.', ',')
+            desimal_latex = latex(desimal).replace('.', ',')
+            if desimal_latex != eksak:
                 return eksak + " " + BS + "approx " + desimal_latex
             return eksak
         except Exception:
             return eksak
+
     except Exception:
         try:
             return latex(expr)
@@ -236,9 +240,12 @@ def analisis_kekontinuan(expr, var):
         return "B64:" + base64.b64encode(pesan.encode('utf-8')).decode('ascii')
 
 def tabel_nilai(expr, var, a, b, langkah=1):
-    a = float(a)
-    b = float(b)
-    langkah = float(langkah)
+    try:
+        a = float(N(sp.sympify(a)))
+        b = float(N(sp.sympify(b)))
+        langkah = float(N(sp.sympify(langkah)))
+    except Exception:
+        raise ValueError("Nilai a, b, atau langkah tidak valid")
     if langkah <= 0:
         langkah = 1
     hasil = []
@@ -256,11 +263,13 @@ def tabel_nilai(expr, var, a, b, langkah=1):
         iter_count += 1
     return hasil
 
-# ✅ TAMBAHAN: tabel_nilai_desimal
 def tabel_nilai_desimal(expr, var, a, b, langkah=1):
-    a = float(a)
-    b = float(b)
-    langkah = float(langkah)
+    try:
+        a = float(N(sp.sympify(a)))
+        b = float(N(sp.sympify(b)))
+        langkah = float(N(sp.sympify(langkah)))
+    except Exception:
+        raise ValueError("Nilai a, b, atau langkah tidak valid")
     if langkah <= 0:
         langkah = 1
     hasil = []

@@ -152,23 +152,24 @@ function pisahArgumen(rest) {
 }
 
 function konversiKomaDesimal(str) {
-  // Simpan sementara C(...) dan P(...) agar koma di dalamnya tidak diubah
   var temp = [];
-  var hasil = str.replace(/\b[CP]\s*\(\s*\d+\s*,\s*\d+\s*\)/g, function(match) {
+  // ✅ FIX: Regex lebih luas untuk C(...) dan P(...)
+  var hasil = str.replace(/\b[CP]\s*\([^)]*\)/g, function(match) {
     temp.push(match);
     return "__CP__" + (temp.length - 1) + "__";
   });
-  
+
   // Konversi koma desimal ke titik
   hasil = hasil.replace(/(\d),(\d)/g, '$1.$2');
-  
+
   // Kembalikan C(...) dan P(...)
   hasil = hasil.replace(/__CP__(\d+)__/g, function(match, idx) {
     return temp[parseInt(idx)];
   });
-  
+
   return hasil;
 }
+
 
 function formatAngkaJS(n) {
   if (typeof n !== 'number' || !isFinite(n)) return String(n);
@@ -218,15 +219,17 @@ function konversiAngka(str) {
 
 function sisipKaliImplisit(expr) {
   var hasil = expr;
-  var fungsi = [
-    'sin','cos','tan','cot','sec','csc',
-    'asin','acos','atan','sinh','cosh','tanh',
-    'log','ln','exp','sqrt','abs','Abs',
-    'pi','oo','inf','infinity',
-    'Matrix','Eq','N','Sum','Product','Limit','Integral','Derivative',
-    'Piecewise','sign','floor','ceil','factorial','binomial',
-    'gcd','lcm','mod','Min','Max','Rational','Float','Integer'
-  ];
+// ✅ FIX: Pisahkan konstanta dari fungsi
+var konstanta = ['pi', 'oo', 'inf', 'infinity', 'E', 'I'];
+
+var fungsi = [
+  'sin','cos','tan','cot','sec','csc',
+  'asin','acos','atan','sinh','cosh','tanh',
+  'log','ln','exp','sqrt','abs','Abs',
+  'Matrix','Eq','N','Sum','Product','Limit','Integral','Derivative',
+  'Piecewise','sign','floor','ceil','factorial','binomial',
+  'gcd','lcm','mod','Min','Max','Rational','Float','Integer'
+];
 
   hasil = hasil.replace(/(\d+(?:\.\d+)?)\s*%\s*dari\s*(\d+(?:\.\d+)?)/gi, '($1/100)*$2');
   hasil = hasil.replace(/(\d+(?:\.\d+)?)\s*%/g, '($1/100)');
@@ -271,12 +274,20 @@ function sisipKaliImplisit(expr) {
   hasil = hasil.replace(/(\d)([a-zA-Z])/g, '$1*$2');
   hasil = hasil.replace(/\)\s+([a-zA-Z])/g, ')*$1');
   hasil = hasil.replace(/\)([a-zA-Z])/g, ')*$1');
-  hasil = hasil.replace(/([a-zA-Z]+)\s*\(/g, function(match, word) {
-    if (fungsi.indexOf(word) !== -1 || fungsi.indexOf(word.toLowerCase()) !== -1) {
-      return match;
-    }
+  // ✅ FIX: Handle konstanta diikuti kurung
+hasil = hasil.replace(/\b(pi|oo|inf|infinity|E|I)\s*\(/g, '$1*(');
+
+// Handle fungsi
+hasil = hasil.replace(/([a-zA-Z]+)\s*\(/g, function(match, word) {
+  if (fungsi.indexOf(word) !== -1 || fungsi.indexOf(word.toLowerCase()) !== -1) {
+    return match;
+  }
+  if (konstanta.indexOf(word) !== -1 || konstanta.indexOf(word.toLowerCase()) !== -1) {
     return word + '*(';
-  });
+  }
+  return word + '*(';
+});
+
   hasil = hasil.replace(/\)\s*\(/g, ')*(');
   hasil = hasil.replace(/(\d)\s*\(/g, '$1*(');
   hasil = hasil.replace(/\s*([\+\-\*\/\=\<\>])\s*/g, '$1');
