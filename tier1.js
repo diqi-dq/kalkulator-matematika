@@ -187,6 +187,85 @@ function jalankanTier1(q, out) {
     }
     return true;
   }
+// --- FPB ---
+if (lower.startsWith("fpb")) {
+  var rest = q.replace(/^fpb\s*/i, "").trim();
+  var parts = rest.split(";").map(function(s){return s.trim();});
+  if (parts.length < 2) { out.innerHTML = "Format: fpb <a>; <b>"; return true; }
+  var a = parseInt(parts[0]), b = parseInt(parts[1]);
+  if (isNaN(a) || isNaN(b)) { out.innerHTML = "❌ a dan b harus bilangan bulat."; return true; }
+  var hasil = gcd(Math.abs(a), Math.abs(b));
+  out.innerHTML = "FPB(" + a + ", " + b + ") = " + hasil;
+  return true;
+}
+
+// --- KPK ---
+if (lower.startsWith("kpk")) {
+  var rest = q.replace(/^kpk\s*/i, "").trim();
+  var parts = rest.split(";").map(function(s){return s.trim();});
+  if (parts.length < 2) { out.innerHTML = "Format: kpk <a>; <b>"; return true; }
+  var a = parseInt(parts[0]), b = parseInt(parts[1]);
+  if (isNaN(a) || isNaN(b) || a === 0 || b === 0) { out.innerHTML = "❌ a dan b harus bilangan bulat bukan nol."; return true; }
+  var hasil = Math.abs(a * b) / gcd(Math.abs(a), Math.abs(b));
+  out.innerHTML = "KPK(" + a + ", " + b + ") = " + hasil;
+  return true;
+}
+
+// --- CEK PRIMA ---
+if (lower.startsWith("prima?")) {
+  var num = parseInt(q.replace(/^prima\?\s*/i, "").trim());
+  if (isNaN(num) || num < 0) { out.innerHTML = "Format: prima? <n>"; return true; }
+  if (num < 2) { out.innerHTML = num + " bukan bilangan prima"; return true; }
+  var isPrima = true;
+  for (var i = 2; i * i <= num; i++) {
+    if (num % i === 0) { isPrima = false; break; }
+  }
+  out.innerHTML = num + (isPrima ? " adalah bilangan prima" : " bukan bilangan prima");
+  return true;
+}
+
+// --- FAKTORISASI PRIMA ---
+if (lower.startsWith("faktorisasi")) {
+  var num = parseInt(q.replace(/^faktorisasi\s*/i, "").trim());
+  if (isNaN(num) || num < 2) { out.innerHTML = "Format: faktorisasi <n> (n ≥ 2)"; return true; }
+  var n = num;
+  var faktor = {};
+  for (var i = 2; i * i <= n; i++) {
+    while (n % i === 0) {
+      faktor[i] = (faktor[i] || 0) + 1;
+      n = n / i;
+    }
+  }
+  if (n > 1) faktor[n] = (faktor[n] || 0) + 1;
+  var hasilStr = Object.keys(faktor).map(function(p) {
+    var exp = faktor[p];
+    return exp > 1 ? p + "^" + exp : p;
+  }).join(" × ");
+  out.innerHTML = num + " = " + hasilStr;
+  return true;
+}
+
+// --- KONVERSI BASIS ---
+if (lower.startsWith("ke biner")) {
+  var num = parseInt(q.replace(/^ke biner\s*/i, "").trim());
+  if (isNaN(num) || num < 0) { out.innerHTML = "Format: ke biner <n>"; return true; }
+  out.innerHTML = num + "₁₀ = " + num.toString(2) + "₂";
+  return true;
+}
+
+if (lower.startsWith("ke oktal")) {
+  var num = parseInt(q.replace(/^ke oktal\s*/i, "").trim());
+  if (isNaN(num) || num < 0) { out.innerHTML = "Format: ke oktal <n>"; return true; }
+  out.innerHTML = num + "₁₀ = " + num.toString(8) + "₈";
+  return true;
+}
+
+if (lower.startsWith("ke heksadesimal")) {
+  var num = parseInt(q.replace(/^ke heksadesimal\s*/i, "").trim());
+  if (isNaN(num) || num < 0) { out.innerHTML = "Format: ke heksadesimal <n>"; return true; }
+  out.innerHTML = num + "₁₀ = " + num.toString(16).toUpperCase() + "₁₆";
+  return true;
+}
 
   return false;
 }
