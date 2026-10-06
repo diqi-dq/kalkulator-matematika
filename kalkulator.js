@@ -163,6 +163,103 @@ var daftarPerintah = [
   { kategori: "Statistik", nama: "Margin kesalahan", format: "margin kesalahan <std>; <n>; <tingkat>", contoh: "margin kesalahan 15; 30; 0,95", ket: "Margin of error." },
   { kategori: "Statistik", nama: "Regresi linier", format: "regresi linier <x> ; <y>", contoh: "regresi linier 1,2,3,4,5 ; 2,4,5,4,5", ket: "Regresi linier sederhana (OLS)." },
   { kategori: "Statistik", nama: "Distribusi Beta", format: "distribusi beta <x>; <alpha>; <beta>", contoh: "distribusi beta 0,5; 2; 3", ket: "PDF distribusi Beta." }
+
+// ========== SUHU ==========
+{ kategori: "Konversi", nama: "Celsius ke Fahrenheit", format: "celsius ke fahrenheit <c>", contoh: "celsius ke fahrenheit 100", ket: "Konversi suhu dari Celsius ke Fahrenheit." },
+{ kategori: "Konversi", nama: "Fahrenheit ke Celsius", format: "fahrenheit ke celsius <f>", contoh: "fahrenheit ke celsius 212", ket: "Konversi suhu dari Fahrenheit ke Celsius." },
+{ kategori: "Konversi", nama: "Celsius ke Kelvin", format: "celsius ke kelvin <c>", contoh: "celsius ke kelvin 25", ket: "Konversi suhu dari Celsius ke Kelvin." },
+{ kategori: "Konversi", nama: "Kelvin ke Celsius", format: "kelvin ke celsius <k>", contoh: "kelvin ke celsius 300", ket: "Konversi suhu dari Kelvin ke Celsius." },
+{ kategori: "Konversi", nama: "Fahrenheit ke Kelvin", format: "fahrenheit ke kelvin <f>", contoh: "fahrenheit ke kelvin 32", ket: "Konversi suhu dari Fahrenheit ke Kelvin." },
+{ kategori: "Konversi", nama: "Kelvin ke Fahrenheit", format: "kelvin ke fahrenheit <k>", contoh: "kelvin ke fahrenheit 273.15", ket: "Konversi suhu dari Kelvin ke Fahrenheit." },
+{ kategori: "Konversi", nama: "Celsius ke Reamur", format: "celsius ke reamur <c>", contoh: "celsius ke reamur 100", ket: "Konversi suhu dari Celsius ke Reamur." },
+{ kategori: "Konversi", nama: "Reamur ke Celsius", format: "reamur ke celsius <r>", contoh: "reamur ke celsius 80", ket: "Konversi suhu dari Reamur ke Celsius." },
+
+// ========== PANJANG ==========
+{ kategori: "Konversi", nama: "KM ke Meter", format: "km ke meter <km>", contoh: "km ke meter 5", ket: "Konversi panjang dari kilometer ke meter." },
+{ kategori: "Konversi", nama: "KM ke CM", format: "km ke cm <km>", contoh: "km ke cm 1", ket: "Konversi panjang dari kilometer ke sentimeter." },
+{ kategori: "Konversi", nama: "Meter ke CM", format: "meter ke cm <m>", contoh: "meter ke cm 2", ket: "Konversi panjang dari meter ke sentimeter." },
+{ kategori: "Konversi", nama: "Meter ke MM", format: "meter ke mm <m>", contoh: "meter ke mm 2", ket: "Konversi panjang dari meter ke milimeter." },
+{ kategori: "Konversi", nama: "Meter ke KM", format: "meter ke km <m>", contoh: "meter ke km 5000", ket: "Konversi panjang dari meter ke kilometer." },
+{ kategori: "Konversi", nama: "CM ke Meter", format: "cm ke meter <cm>", contoh: "cm ke meter 250", ket: "Konversi panjang dari sentimeter ke meter." },
+{ kategori: "Konversi", nama: "CM ke MM", format: "cm ke mm <cm>", contoh: "cm ke mm 5", ket: "Konversi panjang dari sentimeter ke milimeter." },
+{ kategori: "Konversi", nama: "MM ke CM", format: "mm ke cm <mm>", contoh: "mm ke cm 50", ket: "Konversi panjang dari milimeter ke sentimeter." },
+{ kategori: "Konversi", nama: "Inci ke CM", format: "inci ke cm <inci>", contoh: "inci ke cm 12", ket: "Konversi panjang dari inci ke sentimeter." },
+{ kategori: "Konversi", nama: "CM ke Inci", format: "cm ke inci <cm>", contoh: "cm ke inci 30", ket: "Konversi panjang dari sentimeter ke inci." },
+{ kategori: "Konversi", nama: "Kaki ke Meter", format: "kaki ke meter <kaki>", contoh: "kaki ke meter 10", ket: "Konversi panjang dari kaki ke meter." },
+{ kategori: "Konversi", nama: "Meter ke Kaki", format: "meter ke kaki <m>", contoh: "meter ke kaki 3", ket: "Konversi panjang dari meter ke kaki." },
+{ kategori: "Konversi", nama: "Mil ke KM", format: "mil ke km <mil>", contoh: "mil ke km 5", ket: "Konversi panjang dari mil ke kilometer." },
+{ kategori: "Konversi", nama: "KM ke Mil", format: "km ke mil <km>", contoh: "km ke mil 10", ket: "Konversi panjang dari kilometer ke mil." },
+
+// ========== BERAT ==========
+{ kategori: "Konversi", nama: "KG ke Gram", format: "kg ke gram <kg>", contoh: "kg ke gram 2", ket: "Konversi berat dari kilogram ke gram." },
+{ kategori: "Konversi", nama: "KG ke MG", format: "kg ke mg <kg>", contoh: "kg ke mg 1", ket: "Konversi berat dari kilogram ke miligram." },
+{ kategori: "Konversi", nama: "Gram ke KG", format: "gram ke kg <g>", contoh: "gram ke kg 5000", ket: "Konversi berat dari gram ke kilogram." },
+{ kategori: "Konversi", nama: "Gram ke MG", format: "gram ke mg <g>", contoh: "gram ke mg 5", ket: "Konversi berat dari gram ke miligram." },
+{ kategori: "Konversi", nama: "MG ke Gram", format: "mg ke gram <mg>", contoh: "mg ke gram 5000", ket: "Konversi berat dari miligram ke gram." },
+{ kategori: "Konversi", nama: "Ton ke KG", format: "ton ke kg <ton>", contoh: "ton ke kg 2", ket: "Konversi berat dari ton ke kilogram." },
+{ kategori: "Konversi", nama: "KG ke Ton", format: "kg ke ton <kg>", contoh: "kg ke ton 2000", ket: "Konversi berat dari kilogram ke ton." },
+{ kategori: "Konversi", nama: "Pon ke KG", format: "pon ke kg <pon>", contoh: "pon ke kg 10", ket: "Konversi berat dari pon ke kilogram." },
+{ kategori: "Konversi", nama: "KG ke Pon", format: "kg ke pon <kg>", contoh: "kg ke pon 5", ket: "Konversi berat dari kilogram ke pon." },
+{ kategori: "Konversi", nama: "Ons ke Gram", format: "ons ke gram <ons>", contoh: "ons ke gram 5", ket: "Konversi berat dari ons ke gram." },
+
+// ========== WAKTU ==========
+{ kategori: "Konversi", nama: "Jam ke Menit", format: "jam ke menit <jam>", contoh: "jam ke menit 2", ket: "Konversi waktu dari jam ke menit." },
+{ kategori: "Konversi", nama: "Jam ke Detik", format: "jam ke detik <jam>", contoh: "jam ke detik 1", ket: "Konversi waktu dari jam ke detik." },
+{ kategori: "Konversi", nama: "Menit ke Detik", format: "menit ke detik <menit>", contoh: "menit ke detik 5", ket: "Konversi waktu dari menit ke detik." },
+{ kategori: "Konversi", nama: "Menit ke Jam", format: "menit ke jam <menit>", contoh: "menit ke jam 120", ket: "Konversi waktu dari menit ke jam." },
+{ kategori: "Konversi", nama: "Detik ke Menit", format: "detik ke menit <detik>", contoh: "detik ke menit 300", ket: "Konversi waktu dari detik ke menit." },
+{ kategori: "Konversi", nama: "Detik ke Jam", format: "detik ke jam <detik>", contoh: "detik ke jam 7200", ket: "Konversi waktu dari detik ke jam." },
+{ kategori: "Konversi", nama: "Hari ke Jam", format: "hari ke jam <hari>", contoh: "hari ke jam 2", ket: "Konversi waktu dari hari ke jam." },
+{ kategori: "Konversi", nama: "Hari ke Menit", format: "hari ke menit <hari>", contoh: "hari ke menit 1", ket: "Konversi waktu dari hari ke menit." },
+{ kategori: "Konversi", nama: "Minggu ke Hari", format: "minggu ke hari <minggu>", contoh: "minggu ke hari 2", ket: "Konversi waktu dari minggu ke hari." },
+{ kategori: "Konversi", nama: "Tahun ke Hari", format: "tahun ke hari <tahun>", contoh: "tahun ke hari 1", ket: "Konversi waktu dari tahun ke hari." },
+{ kategori: "Konversi", nama: "Tahun ke Bulan", format: "tahun ke bulan <tahun>", contoh: "tahun ke bulan 2", ket: "Konversi waktu dari tahun ke bulan." },
+
+// ========== LUAS ==========
+{ kategori: "Konversi", nama: "M2 ke CM2", format: "m2 ke cm2 <m2>", contoh: "m2 ke cm2 2", ket: "Konversi luas dari meter persegi ke sentimeter persegi." },
+{ kategori: "Konversi", nama: "CM2 ke M2", format: "cm2 ke m2 <cm2>", contoh: "cm2 ke m2 50000", ket: "Konversi luas dari sentimeter persegi ke meter persegi." },
+{ kategori: "Konversi", nama: "Hektar ke M2", format: "hektar ke m2 <ha>", contoh: "hektar ke m2 1", ket: "Konversi luas dari hektar ke meter persegi." },
+{ kategori: "Konversi", nama: "Are ke M2", format: "are ke m2 <are>", contoh: "are ke m2 1", ket: "Konversi luas dari are ke meter persegi." },
+{ kategori: "Konversi", nama: "Acre ke M2", format: "acre ke m2 <acre>", contoh: "acre ke m2 1", ket: "Konversi luas dari acre ke meter persegi." },
+
+// ========== VOLUME ==========
+{ kategori: "Konversi", nama: "Liter ke ML", format: "liter ke ml <l>", contoh: "liter ke ml 2", ket: "Konversi volume dari liter ke mililiter." },
+{ kategori: "Konversi", nama: "ML ke Liter", format: "ml ke liter <ml>", contoh: "ml ke liter 5000", ket: "Konversi volume dari mililiter ke liter." },
+{ kategori: "Konversi", nama: "Liter ke M3", format: "liter ke m3 <l>", contoh: "liter ke m3 1000", ket: "Konversi volume dari liter ke meter kubik." },
+{ kategori: "Konversi", nama: "M3 ke Liter", format: "m3 ke liter <m3>", contoh: "m3 ke liter 2", ket: "Konversi volume dari meter kubik ke liter." },
+{ kategori: "Konversi", nama: "Galon ke Liter", format: "galon ke liter <galon>", contoh: "galon ke liter 1", ket: "Konversi volume dari galon ke liter." },
+{ kategori: "Konversi", nama: "Liter ke Galon", format: "liter ke galon <l>", contoh: "liter ke galon 10", ket: "Konversi volume dari liter ke galon." },
+
+// ========== KECEPATAN ==========
+{ kategori: "Konversi", nama: "KM/Jam ke M/Detik", format: "km/jam ke m/detik <kmjam>", contoh: "km/jam ke m/detik 36", ket: "Konversi kecepatan dari km/jam ke m/detik." },
+{ kategori: "Konversi", nama: "M/Detik ke KM/Jam", format: "m/detik ke km/jam <mdetik>", contoh: "m/detik ke km/jam 10", ket: "Konversi kecepatan dari m/detik ke km/jam." },
+{ kategori: "Konversi", nama: "Mil/Jam ke KM/Jam", format: "mil/jam ke km/jam <mph>", contoh: "mil/jam ke km/jam 60", ket: "Konversi kecepatan dari mil/jam ke km/jam." },
+{ kategori: "Konversi", nama: "Knot ke KM/Jam", format: "knot ke km/jam <knot>", contoh: "knot ke km/jam 10", ket: "Konversi kecepatan dari knot ke km/jam." },
+
+// ========== DATA DIGITAL ==========
+{ kategori: "Konversi", nama: "Byte ke Bit", format: "byte ke bit <byte>", contoh: "byte ke bit 1", ket: "Konversi data dari byte ke bit." },
+{ kategori: "Konversi", nama: "Bit ke Byte", format: "bit ke byte <bit>", contoh: "bit ke byte 8", ket: "Konversi data dari bit ke byte." },
+{ kategori: "Konversi", nama: "KB ke Byte", format: "kb ke byte <kb>", contoh: "kb ke byte 1", ket: "Konversi data dari kilobyte ke byte." },
+{ kategori: "Konversi", nama: "MB ke KB", format: "mb ke kb <mb>", contoh: "mb ke kb 1", ket: "Konversi data dari megabyte ke kilobyte." },
+{ kategori: "Konversi", nama: "GB ke MB", format: "gb ke mb <gb>", contoh: "gb ke mb 1", ket: "Konversi data dari gigabyte ke megabyte." },
+{ kategori: "Konversi", nama: "TB ke GB", format: "tb ke gb <tb>", contoh: "tb ke gb 1", ket: "Konversi data dari terabyte ke gigabyte." },
+
+// ========== SUDUT ==========
+{ kategori: "Konversi", nama: "Derajat ke Radian", format: "derajat ke radian <derajat>", contoh: "derajat ke radian 180", ket: "Konversi sudut dari derajat ke radian." },
+{ kategori: "Konversi", nama: "Radian ke Derajat", format: "radian ke derajat <radian>", contoh: "radian ke derajat 3.14159", ket: "Konversi sudut dari radian ke derajat." },
+
+// ========== ENERGI ==========
+{ kategori: "Konversi", nama: "Kalori ke Joule", format: "kalori ke joule <kal>", contoh: "kalori ke joule 1", ket: "Konversi energi dari kalori ke joule." },
+{ kategori: "Konversi", nama: "Joule ke Kalori", format: "joule ke kalori <joule>", contoh: "joule ke kalori 100", ket: "Konversi energi dari joule ke kalori." },
+{ kategori: "Konversi", nama: "KWh ke Joule", format: "kwh ke joule <kwh>", contoh: "kwh ke joule 1", ket: "Konversi energi dari kWh ke joule." },
+
+// ========== TEKANAN ==========
+{ kategori: "Konversi", nama: "Atm ke Pascal", format: "atm ke pascal <atm>", contoh: "atm ke pascal 1", ket: "Konversi tekanan dari atm ke pascal." },
+{ kategori: "Konversi", nama: "Bar ke Pascal", format: "bar ke pascal <bar>", contoh: "bar ke pascal 1", ket: "Konversi tekanan dari bar ke pascal." },
+{ kategori: "Konversi", nama: "Psi ke Pascal", format: "psi ke pascal <psi>", contoh: "psi ke pascal 1", ket: "Konversi tekanan dari psi ke pascal." },
+
+
+
 ];
 
 // ========================================================
@@ -171,6 +268,7 @@ var daftarPerintah = [
 var urutanKategori = [
   "Hitung",
   "Bilangan",
+  "Konversi",
   "Aljabar",
   "Trigonometri",
   "Kalkulus",
