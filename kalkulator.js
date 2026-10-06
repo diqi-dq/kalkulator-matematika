@@ -122,6 +122,27 @@ var daftarPerintah = [
   { kategori: "Bilangan", nama: "Ke biner", format: "ke biner <n>", contoh: "ke biner 10", ket: "Konversi ke biner." },
   { kategori: "Bilangan", nama: "Ke oktal", format: "ke oktal <n>", contoh: "ke oktal 10", ket: "Konversi ke oktal." },
   { kategori: "Bilangan", nama: "Ke heksadesimal", format: "ke heksadesimal <n>", contoh: "ke heksadesimal 255", ket: "Konversi ke heksadesimal." },
+{ 
+  kategori: "Bilangan", 
+  nama: "Bulatkan", 
+  format: "bulatkan <n> [ke <desimal>]", 
+  contoh: "bulatkan 3,14159 ke 2", 
+  ket: "Membulatkan bilangan ke jumlah desimal tertentu." 
+},
+{ 
+  kategori: "Bilangan", 
+  nama: "Mutlak", 
+  format: "mutlak <n>", 
+  contoh: "mutlak -5", 
+  ket: "Nilai mutlak (absolut) dari bilangan." 
+},
+{ 
+  kategori: "Bilangan", 
+  nama: "Sisa bagi (modulo)", 
+  format: "sisa <a> bagi <b>", 
+  contoh: "sisa 17 bagi 5", 
+  ket: "Sisa hasil bagi (modulo) dua bilangan bulat." 
+},
 
   // ========== TRIGONOMETRI ==========
   { kategori: "Trigonometri", nama: "Sinus", format: "sinus <sudut>", contoh: "sinus pi/6", ket: "sin(x).", visual: true },

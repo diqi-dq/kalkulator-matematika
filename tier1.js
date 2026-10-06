@@ -679,5 +679,63 @@ function jalankanTier1(q, out) {
     }
   }
 
+// ========================================================
+// BULATKAN, MUTLAK, SISA
+// ========================================================
+
+// --- BULATKAN ---
+if (lower.startsWith("bulatkan")) {
+  var rest = q.replace(/^bulatkan\s*/i, "").trim();
+  // Format: bulatkan <n> [ke <desimal>]
+  var match = rest.match(/^([\d.,\-]+)\s*(?:ke\s*(\d+))?$/i);
+  if (!match) {
+    out.innerHTML = "Format: bulatkan &lt;n&gt; [ke &lt;desimal&gt;]<br>Contoh: bulatkan 3,14159 ke 2";
+    return true;
+  }
+  var num = parseFloat(match[1].replace(",", "."));
+  var desimal = match[2] ? parseInt(match[2]) : 0;
+  if (isNaN(num)) {
+    out.innerHTML = "❌ Nilai tidak valid: " + match[1];
+    return true;
+  }
+  if (desimal < 0 || desimal > 20) {
+    out.innerHTML = "❌ Desimal harus 0-20.";
+    return true;
+  }
+  var hasil = num.toFixed(desimal);
+  out.innerHTML = num + " dibulatkan ke " + desimal + " desimal = " + hasil.replace(".", ",");
+  return true;
+}
+
+// --- MUTLAK ---
+if (lower.startsWith("mutlak")) {
+  var num = parseFloat(q.replace(/^mutlak\s*/i, "").trim().replace(",", "."));
+  if (isNaN(num)) {
+    out.innerHTML = "Format: mutlak &lt;n&gt;<br>Contoh: mutlak -5";
+    return true;
+  }
+  out.innerHTML = "|" + num + "| = " + Math.abs(num);
+  return true;
+}
+
+// --- SISA BAGI (MODULO) ---
+if (lower.startsWith("sisa")) {
+  var rest = q.replace(/^sisa\s*/i, "").trim();
+  // Format: sisa <a> bagi <b>
+  var match = rest.match(/^(\d+)\s+bagi\s+(\d+)$/i);
+  if (!match) {
+    out.innerHTML = "Format: sisa &lt;a&gt; bagi &lt;b&gt;<br>Contoh: sisa 17 bagi 5";
+    return true;
+  }
+  var a = parseInt(match[1]);
+  var b = parseInt(match[2]);
+  if (b === 0) {
+    out.innerHTML = "❌ Tidak bisa bagi dengan 0.";
+    return true;
+  }
+  out.innerHTML = a + " mod " + b + " = " + (a % b);
+  return true;
+}
+
   return false;
 }
