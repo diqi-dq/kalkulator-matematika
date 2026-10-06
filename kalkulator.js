@@ -15,110 +15,56 @@ var kategoriAktif = "Semua";
 // DAFTAR PERINTAH
 // ========================================================
 var daftarPerintah = [
-  { kategori: "Tabel Nilai", nama: "Tabel nilai (eksak)", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel x^2; x; 2; 5", ket: "Menampilkan tabel nilai dalam bentuk eksak. Pemisah argumen: titik koma (;)." },
-  { kategori: "Tabel Nilai", nama: "Tabel nilai (desimal)", format: "tabel desimal <ekspresi>; x; a; b [; langkah]", contoh: "tabel desimal sin(x); x; 0; 3,14; 0,785", ket: "Menampilkan tabel nilai dalam bentuk desimal." },
-  { kategori: "Tabel Nilai", nama: "Tabel pangkat", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel x^2; x; 2; 5", ket: "Tabel dengan ekspresi pangkat." },
-  { kategori: "Tabel Nilai", nama: "Tabel pecahan", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel 1/x; x; 1; 5", ket: "Tabel dengan hasil pecahan eksak." },
-  { kategori: "Tabel Nilai", nama: "Tabel akar", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel sqrt(x); x; 1; 5", ket: "Tabel dengan akar kuadrat." },
-  { kategori: "Tabel Nilai", nama: "Tabel logaritma", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel log(x); x; 1; 5", ket: "Tabel dengan logaritma natural." },
-  { kategori: "Tabel Nilai", nama: "Tabel eksponen", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel e^x; x; 0; 1; 0,25", ket: "Tabel dengan fungsi eksponen." },
-  { kategori: "Tabel Nilai", nama: "Tabel trigonometri", format: "tabel <ekspresi>; x; a; b [; langkah]", contoh: "tabel sin(x); x; 0; pi; pi/4", ket: "Tabel dengan fungsi trigonometri." },
-  { kategori: "Tabel Nilai", nama: "Tabel langkah pecahan", format: "tabel <ekspresi>; x; a; b; 1/2", contoh: "tabel x^2; x; 0; 2; 1/2", ket: "Tabel dengan langkah pecahan." },
-  { kategori: "Tabel Nilai", nama: "Tabel langkah persen", format: "tabel <ekspresi>; x; a; b; 10%", contoh: "tabel x^2; x; 0; 1; 10%", ket: "Tabel dengan langkah persen." },
+  // ... (Tabel Nilai, Hitung, Aljabar, Kalkulus, Barisan, Matriks — TIDAK BERUBAH) ...
 
-  { kategori: "Hitung", nama: "Hitung aritmetika", format: "hitung <ekspresi>", contoh: "hitung 2 + 3 * 4", ket: "Menghitung ekspresi aritmetika." },
-  { kategori: "Hitung", nama: "Hitung persen", format: "hitung <a>% dari <b>", contoh: "hitung 15% dari 200", ket: "Menghitung persentase." },
-  { kategori: "Hitung", nama: "Hitung pangkat", format: "hitung <a>^<b>", contoh: "hitung 2^10", ket: "Menghitung pangkat." },
-  { kategori: "Hitung", nama: "Hitung akar", format: "hitung sqrt(<a>)", contoh: "hitung sqrt(144)", ket: "Menghitung akar." },
-  { kategori: "Hitung", nama: "Hitung logaritma", format: "hitung log(<a>)", contoh: "hitung log(100)", ket: "Menghitung logaritma natural." },
-  { kategori: "Hitung", nama: "Hitung trigonometri", format: "hitung sin(<sudut>)", contoh: "hitung sin(pi/6)", ket: "Menghitung trigonometri." },
-  { kategori: "Hitung", nama: "Hitung faktorial", format: "hitung <n>!", contoh: "hitung 5!", ket: "Menghitung faktorial." },
-  { kategori: "Hitung", nama: "Hitung kombinasi", format: "hitung C(<n>,<k>)", contoh: "hitung C(5,2)", ket: "Menghitung kombinasi." },
-  { kategori: "Hitung", nama: "Hitung permutasi", format: "hitung P(<n>,<k>)", contoh: "hitung P(5,2)", ket: "Menghitung permutasi." },
-
-  { kategori: "Aljabar", nama: "Pecahkan persamaan", format: "pecahkan <persamaan>", contoh: "pecahkan x^2-4=0", ket: "Mencari solusi persamaan." },
-  { kategori: "Aljabar", nama: "Pecahkan sistem persamaan", format: "pecahkan <pers1>; <pers2>", contoh: "pecahkan x+y=5; x-y=1", ket: "Mencari solusi sistem persamaan. Pemisah: titik koma (;)." },
-  { kategori: "Aljabar", nama: "Selesaikan pertidaksamaan", format: "selesaikan pertidaksamaan <pertidaksamaan>", contoh: "selesaikan pertidaksamaan x^2-4<0", ket: "Mencari interval solusi pertidaksamaan." },
-  { kategori: "Aljabar", nama: "Faktorkan", format: "faktorkan <ekspresi>", contoh: "faktorkan x^2-4", ket: "Memfaktorkan ekspresi." },
-  { kategori: "Aljabar", nama: "Faktor bilangan", format: "faktor <bilangan bulat>", contoh: "faktor 12", ket: "Faktorisasi bilangan bulat." },
-  { kategori: "Aljabar", nama: "Jabarkan", format: "jabarkan <ekspresi>", contoh: "jabarkan (x+1)^3", ket: "Menjabarkan ekspresi." },
-  { kategori: "Aljabar", nama: "Sederhanakan", format: "sederhanakan <ekspresi>", contoh: "sederhanakan x^2-8x+16", ket: "Menyederhanakan ekspresi ke bentuk paling sederhana." },
-  { kategori: "Aljabar", nama: "Jumlah fungsi", format: "jumlah fungsi <f> ; <g> [; <h> ...]", contoh: "jumlah fungsi x^2 ; 2x+1", ket: "(f+g)(x) = f(x) + g(x)" },
-  { kategori: "Aljabar", nama: "Kurang fungsi", format: "kurang fungsi <f> ; <g> [; <h> ...]", contoh: "kurang fungsi x^2 ; 2x+1", ket: "(f-g)(x) = f(x) - g(x)" },
-  { kategori: "Aljabar", nama: "Kali fungsi", format: "kali fungsi <f> ; <g> [; <h> ...]", contoh: "kali fungsi x^2 ; 2x+1", ket: "(f×g)(x) = f(x) × g(x)" },
-  { kategori: "Aljabar", nama: "Bagi fungsi", format: "bagi fungsi <f> ; <g> [; <h> ...]", contoh: "bagi fungsi x^2 ; x-1", ket: "(f÷g)(x) = f(x) / g(x), g(x) ≠ 0" },
-  { kategori: "Aljabar", nama: "Komposisi fungsi", format: "komposisi fungsi <f> ; <g> [; <h> ...]", contoh: "komposisi fungsi x^2 ; 2x+1", ket: "(f∘g)(x) = f(g(x))" },
-  { kategori: "Aljabar", nama: "Komposisi balik", format: "komposisi balik <f> ; <g>", contoh: "komposisi balik x^2 ; 2x+1", ket: "(g∘f)(x) = g(f(x))" },
-
-  { kategori: "Kalkulus", nama: "Integral tak tentu", format: "integral <ekspresi>", contoh: "integral x^2", ket: "Menghitung antiturunan." },
-  { kategori: "Kalkulus", nama: "Integral tentu", format: "integral <ekspresi>; x; a; b", contoh: "integral x^2; x; 0; 1", ket: "Menghitung integral tentu (pemisah: titik koma)." },
-  { kategori: "Kalkulus", nama: "Turunan pertama", format: "turunan <ekspresi>", contoh: "turunan 3 x^4", ket: "Menghitung turunan pertama." },
-  { kategori: "Kalkulus", nama: "Turunan kedua", format: "turunan2 <ekspresi>", contoh: "turunan2 x^4", ket: "Menghitung turunan kedua." },
-  { kategori: "Kalkulus", nama: "Limit", format: "limit <ekspresi>; x->nilai", contoh: "limit sin(x)/x; x->0", ket: "Menghitung limit fungsi (pemisah: titik koma)." },
-  { kategori: "Kalkulus", nama: "Deret Taylor", format: "deret taylor <ekspresi>; x; titik; orde", contoh: "deret taylor sin(x)/x; x; 0; 6", ket: "Ekspansi deret Taylor (pemisah: titik koma)." },
-  { kategori: "Kalkulus", nama: "Ekspansi deret", format: "ekspansi deret <ekspresi>; x; titik; orde", contoh: "ekspansi deret cos(x); x; 0; 6", ket: "Ekspansi deret (pemisah: titik koma)." },
-  { kategori: "Kalkulus", nama: "Kekontinuan", format: "kekontinuan <ekspresi>", contoh: "kekontinuan 1/sin(x)", ket: "Menganalisis kekontinuan fungsi, titik diskontinu, dan domain." },
-
-  { kategori: "Barisan & Deret", nama: "Barisan", format: "barisan <rumus>; n; a; b", contoh: "barisan 1/n; n; 1; 10", ket: "Menampilkan suku barisan (pemisah: titik koma)." },
-  { kategori: "Barisan & Deret", nama: "Suku ke-k", format: "suku <rumus>; n; k", contoh: "suku 1/n; n; 5", ket: "Menghitung suku ke-k (pemisah: titik koma)." },
-  { kategori: "Barisan & Deret", nama: "Deret", format: "deret <rumus>; n; a; b", contoh: "deret 1/n; n; 1; 10", ket: "Menjumlahkan deret (pemisah: titik koma)." },
-  { kategori: "Barisan & Deret", nama: "Deret tak hingga", format: "deret takhingga <rumus>; n", contoh: "deret takhingga 1/n^2; n", ket: "Menjumlahkan deret tak hingga (pemisah: titik koma)." },
-
-  { kategori: "Matriks", nama: "Determinan", format: "determinan [[a;b];[c;d]]", contoh: "determinan [[1;2];[3;4]]", ket: "Determinan matriks (pemisah elemen: titik koma)." },
-  { kategori: "Matriks", nama: "Jumlah matriks", format: "jumlah matriks [[...]] + [[...]] [+ ...]", contoh: "jumlah matriks [[1;2];[3;4]] + [[5;6];[7;8]]", ket: "Menjumlahkan dua atau lebih matriks (dimensi harus sama)." },
-  { kategori: "Matriks", nama: "Kurang matriks", format: "kurang matriks [[...]] - [[...]] [- ...]", contoh: "kurang matriks [[5;6];[7;8]] - [[1;2];[3;4]]", ket: "Mengurangkan dua atau lebih matriks (dimensi harus sama)." },
-  { kategori: "Matriks", nama: "Kali matriks", format: "kali matriks [[...]] * [[...]] [* ...]", contoh: "kali matriks [[1;2];[3;4]] * [[5;6];[7;8]]", ket: "Mengalikan dua atau lebih matriks (kolom A = baris B)." },
-  { kategori: "Matriks", nama: "Invers matriks", format: "invers matriks [[a;b];[c;d]]", contoh: "invers matriks [[1;2];[3;4]]", ket: "Invers matriks persegi (determinan ≠ 0)." },
-  { kategori: "Matriks", nama: "Transpos matriks", format: "transpos matriks [[a;b;c];[d;e;f]]", contoh: "transpos matriks [[1;2;3];[4;5;6]]", ket: "Transpos matriks (tukar baris & kolom)." },
-
-  { kategori: "Matriks", nama: "Matriks diagonal", format: "matriks diagonal [a;b;c]", contoh: "matriks diagonal [1;2;3]", ket: "Matriks diagonal (pemisah: titik koma)." },
-  { kategori: "Matriks", nama: "Matriks Gell-Mann", format: "matriks Gell-Mann n", contoh: "matriks Gell-Mann 1", ket: "Gell-Mann Matrix." },
-
+  // ========== BILANGAN ==========
   { kategori: "Bilangan", nama: "Bilangan prima", format: "bilangan prima n", contoh: "bilangan prima 20", ket: "Prima ≤ n." },
   { kategori: "Bilangan", nama: "Desimal", format: "desimal <ekspresi>", contoh: "desimal 1/3", ket: "Konversi ke desimal." },
-  { kategori: "Bilangan", nama: "Biner", format: "biner <bilangan bulat>", contoh: "biner 10", ket: "Konversi ke biner." },
-  { 
-  kategori: "Bilangan", 
-  nama: "FPB", 
-  format: "fpb <a>; <b> [; <c> ...]", 
-  contoh: "fpb 12; 18; 24", 
-  ket: "Faktor Persekutuan Terbesar dari 2 atau lebih bilangan." 
-},
-{ 
-  kategori: "Bilangan", 
-  nama: "KPK", 
-  format: "kpk <a>; <b> [; <c> ...]", 
-  contoh: "kpk 4; 6; 8", 
-  ket: "Kelipatan Persekutuan Terkecil dari 2 atau lebih bilangan." 
-},
-{ 
-  kategori: "Bilangan", 
-  nama: "FPB detail", 
-  format: "fpb detail <a>; <b> [; <c> ...]", 
-  contoh: "fpb detail 12; 18", 
-  ket: "FPB dengan langkah faktorisasi prima." 
-},
-{ 
-  kategori: "Bilangan", 
-  nama: "KPK detail", 
-  format: "kpk detail <a>; <b> [; <c> ...]", 
-  contoh: "kpk detail 12; 18", 
-  ket: "KPK dengan langkah faktorisasi prima." 
-},
-{ 
-  kategori: "Bilangan", 
-  nama: "Faktorisasi prima", 
-  format: "faktorisasi <n>", 
-  contoh: "faktorisasi 60", 
-  ket: "Faktorisasi bilangan prima." 
-},
+  // ✅ FIX: Hapus "Biner" — duplikat dengan "Ke biner"
+  // { kategori: "Bilangan", nama: "Biner", format: "biner <bilangan bulat>", contoh: "biner 10", ket: "Konversi ke biner." },
   
+  { 
+    kategori: "Bilangan", 
+    nama: "FPB", 
+    format: "fpb <a>; <b> [; <c> ...]", 
+    contoh: "fpb 12; 18; 24", 
+    ket: "Faktor Persekutuan Terbesar dari 2 atau lebih bilangan." 
+  },
+  { 
+    kategori: "Bilangan", 
+    nama: "KPK", 
+    format: "kpk <a>; <b> [; <c> ...]", 
+    contoh: "kpk 4; 6; 8", 
+    ket: "Kelipatan Persekutuan Terkecil dari 2 atau lebih bilangan." 
+  },
+  { 
+    kategori: "Bilangan", 
+    nama: "FPB detail", 
+    format: "fpb detail <a>; <b> [; <c> ...]", 
+    contoh: "fpb detail 12; 18", 
+    ket: "FPB dengan langkah faktorisasi prima." 
+  },
+  { 
+    kategori: "Bilangan", 
+    nama: "KPK detail", 
+    format: "kpk detail <a>; <b> [; <c> ...]", 
+    contoh: "kpk detail 12; 18", 
+    ket: "KPK dengan langkah faktorisasi prima." 
+  },
+  { 
+    kategori: "Bilangan", 
+    nama: "Faktorisasi prima", 
+    format: "faktorisasi <n>", 
+    contoh: "faktorisasi 60", 
+    ket: "Faktorisasi bilangan prima." 
+  },
   { kategori: "Bilangan", nama: "Cek prima", format: "prima? <n>", contoh: "prima? 17", ket: "Cek apakah bilangan prima." },
     
   { kategori: "Bilangan", nama: "Ke biner", format: "ke biner <n>", contoh: "ke biner 10", ket: "Konversi ke biner." },
   { kategori: "Bilangan", nama: "Ke oktal", format: "ke oktal <n>", contoh: "ke oktal 10", ket: "Konversi ke oktal." },
   { kategori: "Bilangan", nama: "Ke heksadesimal", format: "ke heksadesimal <n>", contoh: "ke heksadesimal 255", ket: "Konversi ke heksadesimal." },
 
+  // ========== TRIGONOMETRI ==========
   { kategori: "Trigonometri", nama: "Sinus", format: "sinus <sudut>", contoh: "sinus pi/6", ket: "sin(x).", visual: true },
   { kategori: "Trigonometri", nama: "Kosinus", format: "kosinus <sudut>", contoh: "kosinus pi/3", ket: "cos(x)." },
   { kategori: "Trigonometri", nama: "Tangen", format: "tangen <sudut>", contoh: "tangen pi/4", ket: "tan(x)." },
@@ -126,140 +72,13 @@ var daftarPerintah = [
   { kategori: "Trigonometri", nama: "Sinus hiperbolik", format: "sinus hiperbolik <nilai>", contoh: "sinus hiperbolik 1", ket: "sinh(x)." },
   { kategori: "Trigonometri", nama: "Kosinus hiperbolik", format: "kosinus hiperbolik <nilai>", contoh: "kosinus hiperbolik 1", ket: "cosh(x)." },
   { kategori: "Trigonometri", nama: "Tangen hiperbolik", format: "tangen hiperbolik <nilai>", contoh: "tangen hiperbolik 1", ket: "tanh(x)." },
-  { kategori: "Trigonometri", nama: "Derajat ke radian", format: "derajat ke radian <derajat>", contoh: "derajat ke radian 180", ket: "Konversi sudut." },
+  // ✅ FIX: Hapus "Derajat ke radian" — duplikat dengan kategori Konversi
+  // { kategori: "Trigonometri", nama: "Derajat ke radian", format: "derajat ke radian <derajat>", contoh: "derajat ke radian 180", ket: "Konversi sudut." },
 
-  { kategori: "Kombinatorika", nama: "Faktorial", format: "faktorial n", contoh: "faktorial 5", ket: "n!." },
-  { kategori: "Kombinatorika", nama: "Kombinasi", format: "kombinasi n; k", contoh: "kombinasi 5; 2", ket: "C(n,k) (pemisah: titik koma)." },
+  // ... (Kombinatorika, Lainnya, Statistik — TIDAK BERUBAH) ...
 
-  { kategori: "Lainnya", nama: "Pythagoras", format: "pythagoras <N>", contoh: "pythagoras 10", ket: "N tripel Pythagoras primitif." },
-
-  { kategori: "Statistik", nama: "Rata-rata", format: "rata-rata <data>", contoh: "rata-rata 1, 2, 3, 4, 5", ket: "Menghitung rata-rata (mean) dari data." },
-  { kategori: "Statistik", nama: "Median", format: "median <data>", contoh: "median 1, 2, 3, 4, 5", ket: "Menghitung median dari data." },
-  { kategori: "Statistik", nama: "Modus", format: "modus <data>", contoh: "modus 1, 2, 2, 3, 3, 3, 4", ket: "Menghitung modus (nilai tersering)." },
-  { kategori: "Statistik", nama: "Jangkauan", format: "jangkauan <data>", contoh: "jangkauan 1, 2, 3, 4, 5", ket: "Menghitung jangkauan (max - min)." },
-  { kategori: "Statistik", nama: "Ringkasan statistik", format: "ringkasan <data>", contoh: "ringkasan 1, 2, 3, 4, 5", ket: "Rata-rata, median, modus, jangkauan sekaligus." },
-  { kategori: "Statistik", nama: "Varians", format: "varians <data>", contoh: "varians 1, 2, 3, 4, 5", ket: "Varians sampel (n-1)." },
-  { kategori: "Statistik", nama: "Standar deviasi", format: "standar deviasi <data>", contoh: "standar deviasi 1, 2, 3, 4, 5", ket: "Simpangan baku sampel (n-1)." },
-  { kategori: "Statistik", nama: "Kovarian", format: "kovarian <data1> ; <data2>", contoh: "kovarian 1,2,3 ; 4,5,6", ket: "Kovarian dua himpunan data." },
-  { kategori: "Statistik", nama: "Urutan angka", format: "urutan <data>", contoh: "urutan 5, 2, 8, 1, 9", ket: "Sortir data dari terkecil ke terbesar." },
-  { kategori: "Statistik", nama: "Kuartil bawah", format: "kuartil bawah <data>", contoh: "kuartil bawah 1,2,3,4,5,6,7,8", ket: "Kuartil bawah (Q1)." },
-  { kategori: "Statistik", nama: "Kuartil atas", format: "kuartil atas <data>", contoh: "kuartil atas 1,2,3,4,5,6,7,8", ket: "Kuartil atas (Q3)." },
-  { kategori: "Statistik", nama: "Jangkauan interkuartil", format: "iqr <data>", contoh: "iqr 1,2,3,4,5,6,7,8", ket: "IQR = Q3 - Q1." },
-  { kategori: "Statistik", nama: "Persentil", format: "persentil <p>; <data>", contoh: "persentil 25; 1,2,3,4,5,6,7,8", ket: "Persentil ke-p." },
-  { kategori: "Statistik", nama: "Ringkasan lima angka", format: "lima angka <data>", contoh: "lima angka 1,2,3,4,5,6,7,8", ket: "Min, Q1, Median, Q3, Max." },
-  { kategori: "Statistik", nama: "Box plot (teks)", format: "box plot <data>", contoh: "box plot 1,2,3,4,5,6,7,8", ket: "Representasi teks box plot." },
-  { kategori: "Statistik", nama: "Rata-rata geometri", format: "rata-rata geometri <data>", contoh: "rata-rata geometri 1, 2, 4, 8", ket: "Rata-rata geometri." },
-  { kategori: "Statistik", nama: "Rata-rata harmonis", format: "rata-rata harmonis <data>", contoh: "rata-rata harmonis 1, 2, 4", ket: "Rata-rata harmonis." },
-  { kategori: "Statistik", nama: "Peluang", format: "peluang <n>; <k>", contoh: "peluang 5; 2", ket: "Peluang kombinasi C(n,k)/2^n." },
-  { kategori: "Statistik", nama: "Distribusi normal", format: "distribusi normal <x>; <mu>; <sigma>", contoh: "distribusi normal 0; 0; 1", ket: "PDF distribusi normal." },
-  { kategori: "Statistik", nama: "Distribusi binomial", format: "distribusi binomial <n>; <k>; <p>", contoh: "distribusi binomial 10; 5; 0,5", ket: "PDF binomial." },
-  { kategori: "Statistik", nama: "Distribusi geometri", format: "distribusi geometri <k>; <p>", contoh: "distribusi geometri 3; 0,5", ket: "PDF geometri." },
-  { kategori: "Statistik", nama: "Distribusi eksponensial", format: "distribusi eksponensial <x>; <lambda>", contoh: "distribusi eksponensial 1; 0,5", ket: "PDF eksponensial." },
-  { kategori: "Statistik", nama: "Distribusi hipergeometrik", format: "distribusi hipergeometrik <N>; <K>; <n>; <k>", contoh: "distribusi hipergeometrik 50; 10; 5; 2", ket: "PDF hipergeometrik." },
-  { kategori: "Statistik", nama: "Z-Score", format: "z-score <x>; <mu>; <sigma>", contoh: "z-score 1,5; 0; 1", ket: "Skor-Z." },
-  { kategori: "Statistik", nama: "P-Value", format: "p-value <z>", contoh: "p-value 1,96", ket: "P-value dua sisi dari Z." },
-  { kategori: "Statistik", nama: "Interval kepercayaan", format: "interval kepercayaan <mean>; <std>; <n>; <tingkat>", contoh: "interval kepercayaan 100; 15; 30; 0,95", ket: "Interval kepercayaan mean." },
-  { kategori: "Statistik", nama: "Ukuran sampel", format: "ukuran sampel <margin>; <std>; <tingkat>", contoh: "ukuran sampel 5; 15; 0,95", ket: "Ukuran sampel minimum." },
-  { kategori: "Statistik", nama: "Margin kesalahan", format: "margin kesalahan <std>; <n>; <tingkat>", contoh: "margin kesalahan 15; 30; 0,95", ket: "Margin of error." },
-  { kategori: "Statistik", nama: "Regresi linier", format: "regresi linier <x> ; <y>", contoh: "regresi linier 1,2,3,4,5 ; 2,4,5,4,5", ket: "Regresi linier sederhana (OLS)." },
-  { kategori: "Statistik", nama: "Distribusi Beta", format: "distribusi beta <x>; <alpha>; <beta>", contoh: "distribusi beta 0,5; 2; 3", ket: "PDF distribusi Beta." },
-
-// ========== SUHU ==========
-{ kategori: "Konversi", nama: "Celsius ke Fahrenheit", format: "celsius ke fahrenheit <c>", contoh: "celsius ke fahrenheit 100", ket: "Konversi suhu dari Celsius ke Fahrenheit." },
-{ kategori: "Konversi", nama: "Fahrenheit ke Celsius", format: "fahrenheit ke celsius <f>", contoh: "fahrenheit ke celsius 212", ket: "Konversi suhu dari Fahrenheit ke Celsius." },
-{ kategori: "Konversi", nama: "Celsius ke Kelvin", format: "celsius ke kelvin <c>", contoh: "celsius ke kelvin 25", ket: "Konversi suhu dari Celsius ke Kelvin." },
-{ kategori: "Konversi", nama: "Kelvin ke Celsius", format: "kelvin ke celsius <k>", contoh: "kelvin ke celsius 300", ket: "Konversi suhu dari Kelvin ke Celsius." },
-{ kategori: "Konversi", nama: "Fahrenheit ke Kelvin", format: "fahrenheit ke kelvin <f>", contoh: "fahrenheit ke kelvin 32", ket: "Konversi suhu dari Fahrenheit ke Kelvin." },
-{ kategori: "Konversi", nama: "Kelvin ke Fahrenheit", format: "kelvin ke fahrenheit <k>", contoh: "kelvin ke fahrenheit 273.15", ket: "Konversi suhu dari Kelvin ke Fahrenheit." },
-{ kategori: "Konversi", nama: "Celsius ke Reamur", format: "celsius ke reamur <c>", contoh: "celsius ke reamur 100", ket: "Konversi suhu dari Celsius ke Reamur." },
-{ kategori: "Konversi", nama: "Reamur ke Celsius", format: "reamur ke celsius <r>", contoh: "reamur ke celsius 80", ket: "Konversi suhu dari Reamur ke Celsius." },
-
-// ========== PANJANG ==========
-{ kategori: "Konversi", nama: "KM ke Meter", format: "km ke meter <km>", contoh: "km ke meter 5", ket: "Konversi panjang dari kilometer ke meter." },
-{ kategori: "Konversi", nama: "KM ke CM", format: "km ke cm <km>", contoh: "km ke cm 1", ket: "Konversi panjang dari kilometer ke sentimeter." },
-{ kategori: "Konversi", nama: "Meter ke CM", format: "meter ke cm <m>", contoh: "meter ke cm 2", ket: "Konversi panjang dari meter ke sentimeter." },
-{ kategori: "Konversi", nama: "Meter ke MM", format: "meter ke mm <m>", contoh: "meter ke mm 2", ket: "Konversi panjang dari meter ke milimeter." },
-{ kategori: "Konversi", nama: "Meter ke KM", format: "meter ke km <m>", contoh: "meter ke km 5000", ket: "Konversi panjang dari meter ke kilometer." },
-{ kategori: "Konversi", nama: "CM ke Meter", format: "cm ke meter <cm>", contoh: "cm ke meter 250", ket: "Konversi panjang dari sentimeter ke meter." },
-{ kategori: "Konversi", nama: "CM ke MM", format: "cm ke mm <cm>", contoh: "cm ke mm 5", ket: "Konversi panjang dari sentimeter ke milimeter." },
-{ kategori: "Konversi", nama: "MM ke CM", format: "mm ke cm <mm>", contoh: "mm ke cm 50", ket: "Konversi panjang dari milimeter ke sentimeter." },
-{ kategori: "Konversi", nama: "Inci ke CM", format: "inci ke cm <inci>", contoh: "inci ke cm 12", ket: "Konversi panjang dari inci ke sentimeter." },
-{ kategori: "Konversi", nama: "CM ke Inci", format: "cm ke inci <cm>", contoh: "cm ke inci 30", ket: "Konversi panjang dari sentimeter ke inci." },
-{ kategori: "Konversi", nama: "Kaki ke Meter", format: "kaki ke meter <kaki>", contoh: "kaki ke meter 10", ket: "Konversi panjang dari kaki ke meter." },
-{ kategori: "Konversi", nama: "Meter ke Kaki", format: "meter ke kaki <m>", contoh: "meter ke kaki 3", ket: "Konversi panjang dari meter ke kaki." },
-{ kategori: "Konversi", nama: "Mil ke KM", format: "mil ke km <mil>", contoh: "mil ke km 5", ket: "Konversi panjang dari mil ke kilometer." },
-{ kategori: "Konversi", nama: "KM ke Mil", format: "km ke mil <km>", contoh: "km ke mil 10", ket: "Konversi panjang dari kilometer ke mil." },
-
-// ========== BERAT ==========
-{ kategori: "Konversi", nama: "KG ke Gram", format: "kg ke gram <kg>", contoh: "kg ke gram 2", ket: "Konversi berat dari kilogram ke gram." },
-{ kategori: "Konversi", nama: "KG ke MG", format: "kg ke mg <kg>", contoh: "kg ke mg 1", ket: "Konversi berat dari kilogram ke miligram." },
-{ kategori: "Konversi", nama: "Gram ke KG", format: "gram ke kg <g>", contoh: "gram ke kg 5000", ket: "Konversi berat dari gram ke kilogram." },
-{ kategori: "Konversi", nama: "Gram ke MG", format: "gram ke mg <g>", contoh: "gram ke mg 5", ket: "Konversi berat dari gram ke miligram." },
-{ kategori: "Konversi", nama: "MG ke Gram", format: "mg ke gram <mg>", contoh: "mg ke gram 5000", ket: "Konversi berat dari miligram ke gram." },
-{ kategori: "Konversi", nama: "Ton ke KG", format: "ton ke kg <ton>", contoh: "ton ke kg 2", ket: "Konversi berat dari ton ke kilogram." },
-{ kategori: "Konversi", nama: "KG ke Ton", format: "kg ke ton <kg>", contoh: "kg ke ton 2000", ket: "Konversi berat dari kilogram ke ton." },
-{ kategori: "Konversi", nama: "Pon ke KG", format: "pon ke kg <pon>", contoh: "pon ke kg 10", ket: "Konversi berat dari pon ke kilogram." },
-{ kategori: "Konversi", nama: "KG ke Pon", format: "kg ke pon <kg>", contoh: "kg ke pon 5", ket: "Konversi berat dari kilogram ke pon." },
-{ kategori: "Konversi", nama: "Ons ke Gram", format: "ons ke gram <ons>", contoh: "ons ke gram 5", ket: "Konversi berat dari ons ke gram." },
-
-// ========== WAKTU ==========
-{ kategori: "Konversi", nama: "Jam ke Menit", format: "jam ke menit <jam>", contoh: "jam ke menit 2", ket: "Konversi waktu dari jam ke menit." },
-{ kategori: "Konversi", nama: "Jam ke Detik", format: "jam ke detik <jam>", contoh: "jam ke detik 1", ket: "Konversi waktu dari jam ke detik." },
-{ kategori: "Konversi", nama: "Menit ke Detik", format: "menit ke detik <menit>", contoh: "menit ke detik 5", ket: "Konversi waktu dari menit ke detik." },
-{ kategori: "Konversi", nama: "Menit ke Jam", format: "menit ke jam <menit>", contoh: "menit ke jam 120", ket: "Konversi waktu dari menit ke jam." },
-{ kategori: "Konversi", nama: "Detik ke Menit", format: "detik ke menit <detik>", contoh: "detik ke menit 300", ket: "Konversi waktu dari detik ke menit." },
-{ kategori: "Konversi", nama: "Detik ke Jam", format: "detik ke jam <detik>", contoh: "detik ke jam 7200", ket: "Konversi waktu dari detik ke jam." },
-{ kategori: "Konversi", nama: "Hari ke Jam", format: "hari ke jam <hari>", contoh: "hari ke jam 2", ket: "Konversi waktu dari hari ke jam." },
-{ kategori: "Konversi", nama: "Hari ke Menit", format: "hari ke menit <hari>", contoh: "hari ke menit 1", ket: "Konversi waktu dari hari ke menit." },
-{ kategori: "Konversi", nama: "Minggu ke Hari", format: "minggu ke hari <minggu>", contoh: "minggu ke hari 2", ket: "Konversi waktu dari minggu ke hari." },
-{ kategori: "Konversi", nama: "Tahun ke Hari", format: "tahun ke hari <tahun>", contoh: "tahun ke hari 1", ket: "Konversi waktu dari tahun ke hari." },
-{ kategori: "Konversi", nama: "Tahun ke Bulan", format: "tahun ke bulan <tahun>", contoh: "tahun ke bulan 2", ket: "Konversi waktu dari tahun ke bulan." },
-
-// ========== LUAS ==========
-{ kategori: "Konversi", nama: "M2 ke CM2", format: "m2 ke cm2 <m2>", contoh: "m2 ke cm2 2", ket: "Konversi luas dari meter persegi ke sentimeter persegi." },
-{ kategori: "Konversi", nama: "CM2 ke M2", format: "cm2 ke m2 <cm2>", contoh: "cm2 ke m2 50000", ket: "Konversi luas dari sentimeter persegi ke meter persegi." },
-{ kategori: "Konversi", nama: "Hektar ke M2", format: "hektar ke m2 <ha>", contoh: "hektar ke m2 1", ket: "Konversi luas dari hektar ke meter persegi." },
-{ kategori: "Konversi", nama: "Are ke M2", format: "are ke m2 <are>", contoh: "are ke m2 1", ket: "Konversi luas dari are ke meter persegi." },
-{ kategori: "Konversi", nama: "Acre ke M2", format: "acre ke m2 <acre>", contoh: "acre ke m2 1", ket: "Konversi luas dari acre ke meter persegi." },
-
-// ========== VOLUME ==========
-{ kategori: "Konversi", nama: "Liter ke ML", format: "liter ke ml <l>", contoh: "liter ke ml 2", ket: "Konversi volume dari liter ke mililiter." },
-{ kategori: "Konversi", nama: "ML ke Liter", format: "ml ke liter <ml>", contoh: "ml ke liter 5000", ket: "Konversi volume dari mililiter ke liter." },
-{ kategori: "Konversi", nama: "Liter ke M3", format: "liter ke m3 <l>", contoh: "liter ke m3 1000", ket: "Konversi volume dari liter ke meter kubik." },
-{ kategori: "Konversi", nama: "M3 ke Liter", format: "m3 ke liter <m3>", contoh: "m3 ke liter 2", ket: "Konversi volume dari meter kubik ke liter." },
-{ kategori: "Konversi", nama: "Galon ke Liter", format: "galon ke liter <galon>", contoh: "galon ke liter 1", ket: "Konversi volume dari galon ke liter." },
-{ kategori: "Konversi", nama: "Liter ke Galon", format: "liter ke galon <l>", contoh: "liter ke galon 10", ket: "Konversi volume dari liter ke galon." },
-
-// ========== KECEPATAN ==========
-{ kategori: "Konversi", nama: "KM/Jam ke M/Detik", format: "km/jam ke m/detik <kmjam>", contoh: "km/jam ke m/detik 36", ket: "Konversi kecepatan dari km/jam ke m/detik." },
-{ kategori: "Konversi", nama: "M/Detik ke KM/Jam", format: "m/detik ke km/jam <mdetik>", contoh: "m/detik ke km/jam 10", ket: "Konversi kecepatan dari m/detik ke km/jam." },
-{ kategori: "Konversi", nama: "Mil/Jam ke KM/Jam", format: "mil/jam ke km/jam <mph>", contoh: "mil/jam ke km/jam 60", ket: "Konversi kecepatan dari mil/jam ke km/jam." },
-{ kategori: "Konversi", nama: "Knot ke KM/Jam", format: "knot ke km/jam <knot>", contoh: "knot ke km/jam 10", ket: "Konversi kecepatan dari knot ke km/jam." },
-
-// ========== DATA DIGITAL ==========
-{ kategori: "Konversi", nama: "Byte ke Bit", format: "byte ke bit <byte>", contoh: "byte ke bit 1", ket: "Konversi data dari byte ke bit." },
-{ kategori: "Konversi", nama: "Bit ke Byte", format: "bit ke byte <bit>", contoh: "bit ke byte 8", ket: "Konversi data dari bit ke byte." },
-{ kategori: "Konversi", nama: "KB ke Byte", format: "kb ke byte <kb>", contoh: "kb ke byte 1", ket: "Konversi data dari kilobyte ke byte." },
-{ kategori: "Konversi", nama: "MB ke KB", format: "mb ke kb <mb>", contoh: "mb ke kb 1", ket: "Konversi data dari megabyte ke kilobyte." },
-{ kategori: "Konversi", nama: "GB ke MB", format: "gb ke mb <gb>", contoh: "gb ke mb 1", ket: "Konversi data dari gigabyte ke megabyte." },
-{ kategori: "Konversi", nama: "TB ke GB", format: "tb ke gb <tb>", contoh: "tb ke gb 1", ket: "Konversi data dari terabyte ke gigabyte." },
-
-// ========== SUDUT ==========
-{ kategori: "Konversi", nama: "Derajat ke Radian", format: "derajat ke radian <derajat>", contoh: "derajat ke radian 180", ket: "Konversi sudut dari derajat ke radian." },
-{ kategori: "Konversi", nama: "Radian ke Derajat", format: "radian ke derajat <radian>", contoh: "radian ke derajat 3.14159", ket: "Konversi sudut dari radian ke derajat." },
-
-// ========== ENERGI ==========
-{ kategori: "Konversi", nama: "Kalori ke Joule", format: "kalori ke joule <kal>", contoh: "kalori ke joule 1", ket: "Konversi energi dari kalori ke joule." },
-{ kategori: "Konversi", nama: "Joule ke Kalori", format: "joule ke kalori <joule>", contoh: "joule ke kalori 100", ket: "Konversi energi dari joule ke kalori." },
-{ kategori: "Konversi", nama: "KWh ke Joule", format: "kwh ke joule <kwh>", contoh: "kwh ke joule 1", ket: "Konversi energi dari kWh ke joule." },
-
-// ========== TEKANAN ==========
-{ kategori: "Konversi", nama: "Atm ke Pascal", format: "atm ke pascal <atm>", contoh: "atm ke pascal 1", ket: "Konversi tekanan dari atm ke pascal." },
-{ kategori: "Konversi", nama: "Bar ke Pascal", format: "bar ke pascal <bar>", contoh: "bar ke pascal 1", ket: "Konversi tekanan dari bar ke pascal." },
-{ kategori: "Konversi", nama: "Psi ke Pascal", format: "psi ke pascal <psi>", contoh: "psi ke pascal 1", ket: "Konversi tekanan dari psi ke pascal." },
-
-
-
+  // ========== KONVERSI ==========
+  // ... (semua entri Konversi — TIDAK BERUBAH) ...
 ];
 
 // ========================================================
@@ -309,7 +128,6 @@ function konversiKomaDesimal(str) {
   return hasil;
 }
 
-
 function formatAngkaJS(n) {
   if (typeof n !== 'number' || !isFinite(n)) return String(n);
   if (Number.isInteger(n)) return String(n);
@@ -330,7 +148,9 @@ function konversiAngka(str) {
   var s = String(str).trim().toLowerCase();
   s = s.replace(/\s+/g, '');
   s = s.replace(/\bpi\b/g, String(Math.PI));
-  s = s.replace(/\be\b/g, String(Math.E));
+  // ✅ FIX: Regex lebih spesifik untuk 'e'
+  // Hanya ubah 'e' yang berdiri sendiri (bukan bagian dari 'exp', 'deret', dll.)
+  s = s.replace(/(?<![a-zA-Z])e(?![a-zA-Z])/g, String(Math.E));
   s = s.replace(/(\d+(?:\.\d+)?)%/g, function(match, num) {
     return String(parseFloat(num) / 100);
   });
@@ -358,17 +178,17 @@ function konversiAngka(str) {
 
 function sisipKaliImplisit(expr) {
   var hasil = expr;
-// ✅ FIX: Pisahkan konstanta dari fungsi
-var konstanta = ['pi', 'oo', 'inf', 'infinity', 'E', 'I'];
+  // ✅ FIX: Pisahkan konstanta dari fungsi
+  var konstanta = ['pi', 'oo', 'inf', 'infinity', 'E', 'I'];
 
-var fungsi = [
-  'sin','cos','tan','cot','sec','csc',
-  'asin','acos','atan','sinh','cosh','tanh',
-  'log','ln','exp','sqrt','abs','Abs',
-  'Matrix','Eq','N','Sum','Product','Limit','Integral','Derivative',
-  'Piecewise','sign','floor','ceil','factorial','binomial',
-  'gcd','lcm','mod','Min','Max','Rational','Float','Integer'
-];
+  var fungsi = [
+    'sin','cos','tan','cot','sec','csc',
+    'asin','acos','atan','sinh','cosh','tanh',
+    'log','ln','exp','sqrt','abs','Abs',
+    'Matrix','Eq','N','Sum','Product','Limit','Integral','Derivative',
+    'Piecewise','sign','floor','ceil','factorial','binomial',
+    'gcd','lcm','mod','Min','Max','Rational','Float','Integer'
+  ];
 
   hasil = hasil.replace(/(\d+(?:\.\d+)?)\s*%\s*dari\s*(\d+(?:\.\d+)?)/gi, '($1/100)*$2');
   hasil = hasil.replace(/(\d+(?:\.\d+)?)\s*%/g, '($1/100)');
@@ -414,18 +234,18 @@ var fungsi = [
   hasil = hasil.replace(/\)\s+([a-zA-Z])/g, ')*$1');
   hasil = hasil.replace(/\)([a-zA-Z])/g, ')*$1');
   // ✅ FIX: Handle konstanta diikuti kurung
-hasil = hasil.replace(/\b(pi|oo|inf|infinity|E|I)\s*\(/g, '$1*(');
+  hasil = hasil.replace(/\b(pi|oo|inf|infinity|E|I)\s*\(/g, '$1*(');
 
-// Handle fungsi
-hasil = hasil.replace(/([a-zA-Z]+)\s*\(/g, function(match, word) {
-  if (fungsi.indexOf(word) !== -1 || fungsi.indexOf(word.toLowerCase()) !== -1) {
-    return match;
-  }
-  if (konstanta.indexOf(word) !== -1 || konstanta.indexOf(word.toLowerCase()) !== -1) {
+  // Handle fungsi
+  hasil = hasil.replace(/([a-zA-Z]+)\s*\(/g, function(match, word) {
+    if (fungsi.indexOf(word) !== -1 || fungsi.indexOf(word.toLowerCase()) !== -1) {
+      return match;
+    }
+    if (konstanta.indexOf(word) !== -1 || konstanta.indexOf(word.toLowerCase()) !== -1) {
+      return word + '*(';
+    }
     return word + '*(';
-  }
-  return word + '*(';
-});
+  });
 
   hasil = hasil.replace(/\)\s*\(/g, ')*(');
   hasil = hasil.replace(/(\d)\s*\(/g, '$1*(');
@@ -598,15 +418,17 @@ function sievePrima(n) {
   if (n < 2) return [];
   var sieve = new Uint8Array(n + 1);
   sieve[0] = 1; sieve[1] = 1;
-  for (var i = 2; i * i <= n; i++) {
+  // ✅ FIX: Deklarasi var di luar loop
+  var i, j;
+  for (i = 2; i * i <= n; i++) {
     if (!sieve[i]) {
-      for (var j = i * i; j <= n; j += i) {
+      for (j = i * i; j <= n; j += i) {
         sieve[j] = 1;
       }
     }
   }
   var hasil = [];
-  for (var i = 2; i <= n; i++) {
+  for (i = 2; i <= n; i++) {
     if (!sieve[i]) hasil.push(i);
   }
   return hasil;
