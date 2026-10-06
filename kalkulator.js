@@ -100,6 +100,13 @@ var daftarPerintah = [
 },
 { 
   kategori: "Bilangan", 
+  nama: "KPK detail", 
+  format: "kpk detail <a>; <b> [; <c> ...]", 
+  contoh: "kpk detail 12; 18", 
+  ket: "KPK dengan langkah faktorisasi prima." 
+},
+{ 
+  kategori: "Bilangan", 
   nama: "Faktorisasi prima", 
   format: "faktorisasi <n>", 
   contoh: "faktorisasi 60", 

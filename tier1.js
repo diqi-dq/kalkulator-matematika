@@ -187,14 +187,16 @@ function jalankanTier1(q, out) {
     }
     return true;
   }
-// --- FPB (multi-bilangan) ---
-if (lower.startsWith("fpb")) {
-  var rest = q.replace(/^fpb\s*/i, "").trim();
-  // ✅ Support pemisah: ; , atau spasi
+
+// ========================================================
+// FPB DETAIL — HARUS DICEK SEBELUM "fpb" BIASA
+// ========================================================
+if (lower.startsWith("fpb detail")) {
+  var rest = q.replace(/^fpb detail\s*/i, "").trim();
   var parts = rest.split(/[;,\s]+/).map(function(s){return s.trim();}).filter(function(s){return s.length > 0;});
   
   if (parts.length < 2) {
-    out.innerHTML = "Format: fpb <a>; <b> [; <c> ...]<br>Contoh: fpb 12; 18; 24";
+    out.innerHTML = "Format: fpb detail &lt;a&gt;; &lt;b&gt; [; &lt;c&gt; ...]<br>Contoh: fpb detail 12; 18";
     return true;
   }
   
@@ -202,31 +204,65 @@ if (lower.startsWith("fpb")) {
   for (var i = 0; i < parts.length; i++) {
     var n = parseInt(parts[i]);
     if (isNaN(n)) {
-      out.innerHTML = "❌ Semua argumen harus bilangan bulat. Argumen ke-" + (i+1) + " tidak valid: " + parts[i];
+      out.innerHTML = "❌ Argumen ke-" + (i+1) + " tidak valid: " + parts[i];
       return true;
     }
     bilangan.push(Math.abs(n));
   }
   
-  // Hitung FPB iteratif
-  var hasil = bilangan[0];
-  for (var i = 1; i < bilangan.length; i++) {
-    hasil = gcd(hasil, bilangan[i]);
-    if (hasil === 1) break; // FPB = 1, tidak bisa lebih kecil
+  function faktorisasi(n) {
+    var faktor = {};
+    for (var i = 2; i * i <= n; i++) {
+      while (n % i === 0) {
+        faktor[i] = (faktor[i] || 0) + 1;
+        n = n / i;
+      }
+    }
+    if (n > 1) faktor[n] = (faktor[n] || 0) + 1;
+    return faktor;
   }
   
-  out.innerHTML = "FPB(" + bilangan.join(", ") + ") = " + hasil;
+  var faktorisasiList = bilangan.map(faktorisasi);
+  
+  var primaSemua = Object.keys(faktorisasiList[0]).map(Number);
+  for (var i = 1; i < faktorisasiList.length; i++) {
+    primaSemua = primaSemua.filter(function(p) {
+      return faktorisasiList[i][p] !== undefined;
+    });
+  }
+  
+  var fpb = 1;
+  var langkahFPB = [];
+  primaSemua.forEach(function(p) {
+    var minPangkat = Math.min.apply(null, faktorisasiList.map(function(f){ return f[p] || 0; }));
+    fpb *= Math.pow(p, minPangkat);
+    langkahFPB.push(p + "^" + minPangkat);
+  });
+  
+  var html = "<b>FPB(" + bilangan.join(", ") + ")</b><br>";
+  html += "Faktorisasi prima:<br>";
+  bilangan.forEach(function(b, i) {
+    var f = faktorisasiList[i];
+    var str = Object.keys(f).map(function(p) {
+      return f[p] > 1 ? p + "^" + f[p] : p;
+    }).join(" × ");
+    html += "&nbsp;&nbsp;" + b + " = " + str + "<br>";
+  });
+  html += "<br>FPB = " + (langkahFPB.length > 0 ? langkahFPB.join(" × ") : "1") + " = " + fpb;
+  
+  out.innerHTML = html;
   return true;
 }
 
-// --- KPK (multi-bilangan) ---
-if (lower.startsWith("kpk")) {
-  var rest = q.replace(/^kpk\s*/i, "").trim();
-  // ✅ Support pemisah: ; , atau spasi
+// ========================================================
+// KPK DETAIL — HARUS DICEK SEBELUM "kpk" BIASA
+// ========================================================
+if (lower.startsWith("kpk detail")) {
+  var rest = q.replace(/^kpk detail\s*/i, "").trim();
   var parts = rest.split(/[;,\s]+/).map(function(s){return s.trim();}).filter(function(s){return s.length > 0;});
   
   if (parts.length < 2) {
-    out.innerHTML = "Format: kpk <a>; <b> [; <c> ...]<br>Contoh: kpk 4; 6; 8";
+    out.innerHTML = "Format: kpk detail &lt;a&gt;; &lt;b&gt; [; &lt;c&gt; ...]<br>Contoh: kpk detail 4; 6";
     return true;
   }
   
@@ -234,7 +270,7 @@ if (lower.startsWith("kpk")) {
   for (var i = 0; i < parts.length; i++) {
     var n = parseInt(parts[i]);
     if (isNaN(n)) {
-      out.innerHTML = "❌ Semua argumen harus bilangan bulat. Argumen ke-" + (i+1) + " tidak valid: " + parts[i];
+      out.innerHTML = "❌ Argumen ke-" + (i+1) + " tidak valid: " + parts[i];
       return true;
     }
     if (n === 0) {
@@ -244,7 +280,109 @@ if (lower.startsWith("kpk")) {
     bilangan.push(Math.abs(n));
   }
   
-  // Hitung KPK iteratif
+  function faktorisasi(n) {
+    var faktor = {};
+    for (var i = 2; i * i <= n; i++) {
+      while (n % i === 0) {
+        faktor[i] = (faktor[i] || 0) + 1;
+        n = n / i;
+      }
+    }
+    if (n > 1) faktor[n] = (faktor[n] || 0) + 1;
+    return faktor;
+  }
+  
+  var faktorisasiList = bilangan.map(faktorisasi);
+  
+  var primaSemua = {};
+  faktorisasiList.forEach(function(f) {
+    Object.keys(f).forEach(function(p) {
+      if (!primaSemua[p] || f[p] > primaSemua[p]) {
+        primaSemua[p] = f[p];
+      }
+    });
+  });
+  
+  var kpk = 1;
+  var langkahKPK = [];
+  Object.keys(primaSemua).sort(function(a,b){return a-b;}).forEach(function(p) {
+    kpk *= Math.pow(p, primaSemua[p]);
+    langkahKPK.push(p + "^" + primaSemua[p]);
+  });
+  
+  var html = "<b>KPK(" + bilangan.join(", ") + ")</b><br>";
+  html += "Faktorisasi prima:<br>";
+  bilangan.forEach(function(b, i) {
+    var f = faktorisasiList[i];
+    var str = Object.keys(f).map(function(p) {
+      return f[p] > 1 ? p + "^" + f[p] : p;
+    }).join(" × ");
+    html += "&nbsp;&nbsp;" + b + " = " + str + "<br>";
+  });
+  html += "<br>KPK = " + langkahKPK.join(" × ") + " = " + kpk;
+  
+  out.innerHTML = html;
+  return true;
+}
+
+// ========================================================
+// FPB BIASA — DICEK SETELAH "fpb detail"
+// ========================================================
+if (lower.startsWith("fpb")) {
+  var rest = q.replace(/^fpb\s*/i, "").trim();
+  var parts = rest.split(/[;,\s]+/).map(function(s){return s.trim();}).filter(function(s){return s.length > 0;});
+  
+  if (parts.length < 2) {
+    out.innerHTML = "Format: fpb &lt;a&gt;; &lt;b&gt; [; &lt;c&gt; ...]<br>Contoh: fpb 12; 18; 24";
+    return true;
+  }
+  
+  var bilangan = [];
+  for (var i = 0; i < parts.length; i++) {
+    var n = parseInt(parts[i]);
+    if (isNaN(n)) {
+      out.innerHTML = "❌ Argumen ke-" + (i+1) + " tidak valid: " + parts[i];
+      return true;
+    }
+    bilangan.push(Math.abs(n));
+  }
+  
+  var hasil = bilangan[0];
+  for (var i = 1; i < bilangan.length; i++) {
+    hasil = gcd(hasil, bilangan[i]);
+    if (hasil === 1) break;
+  }
+  
+  out.innerHTML = "FPB(" + bilangan.join(", ") + ") = " + hasil;
+  return true;
+}
+
+// ========================================================
+// KPK BIASA — DICEK SETELAH "kpk detail"
+// ========================================================
+if (lower.startsWith("kpk")) {
+  var rest = q.replace(/^kpk\s*/i, "").trim();
+  var parts = rest.split(/[;,\s]+/).map(function(s){return s.trim();}).filter(function(s){return s.length > 0;});
+  
+  if (parts.length < 2) {
+    out.innerHTML = "Format: kpk &lt;a&gt;; &lt;b&gt; [; &lt;c&gt; ...]<br>Contoh: kpk 4; 6; 8";
+    return true;
+  }
+  
+  var bilangan = [];
+  for (var i = 0; i < parts.length; i++) {
+    var n = parseInt(parts[i]);
+    if (isNaN(n)) {
+      out.innerHTML = "❌ Argumen ke-" + (i+1) + " tidak valid: " + parts[i];
+      return true;
+    }
+    if (n === 0) {
+      out.innerHTML = "❌ KPK tidak terdefinisi untuk 0.";
+      return true;
+    }
+    bilangan.push(Math.abs(n));
+  }
+  
   var hasil = bilangan[0];
   for (var i = 1; i < bilangan.length; i++) {
     hasil = (hasil * bilangan[i]) / gcd(hasil, bilangan[i]);
@@ -253,7 +391,7 @@ if (lower.startsWith("kpk")) {
   out.innerHTML = "KPK(" + bilangan.join(", ") + ") = " + hasil;
   return true;
 }
-
+  
 // --- CEK PRIMA ---
 if (lower.startsWith("prima?")) {
   var num = parseInt(q.replace(/^prima\?\s*/i, "").trim());
@@ -291,67 +429,7 @@ if (lower.startsWith("faktorisasi")) {
   return true;
 }
 
-// --- FPB dengan faktorisasi ---
-if (lower.startsWith("fpb detail")) {
-  var rest = q.replace(/^fpb detail\s*/i, "").trim();
-  var parts = rest.split(/[;,\s]+/).map(function(s){return s.trim();}).filter(function(s){return s.length > 0;});
-  
-  if (parts.length < 2) {
-    out.innerHTML = "Format: fpb detail <a>; <b> [; <c> ...]";
-    return true;
-  }
-  
-  var bilangan = parts.map(function(p){ return Math.abs(parseInt(p)); });
-  if (bilangan.some(isNaN)) {
-    out.innerHTML = "❌ Semua argumen harus bilangan bulat.";
-    return true;
-  }
-  
-  // Faktorisasi tiap bilangan
-  function faktorisasi(n) {
-    var faktor = {};
-    for (var i = 2; i * i <= n; i++) {
-      while (n % i === 0) {
-        faktor[i] = (faktor[i] || 0) + 1;
-        n = n / i;
-      }
-    }
-    if (n > 1) faktor[n] = (faktor[n] || 0) + 1;
-    return faktor;
-  }
-  
-  var faktorisasiList = bilangan.map(faktorisasi);
-  
-  // FPB: ambil pangkat terkecil untuk setiap prima yang muncul di SEMUA bilangan
-  var primaSemua = Object.keys(faktorisasiList[0]).map(Number);
-  for (var i = 1; i < faktorisasiList.length; i++) {
-    primaSemua = primaSemua.filter(function(p) {
-      return faktorisasiList[i][p] !== undefined;
-    });
-  }
-  
-  var fpb = 1;
-  var langkahFPB = [];
-  primaSemua.forEach(function(p) {
-    var minPangkat = Math.min.apply(null, faktorisasiList.map(function(f){ return f[p] || 0; }));
-    fpb *= Math.pow(p, minPangkat);
-    langkahFPB.push(p + "^" + minPangkat);
-  });
-  
-  var html = "<b>FPB(" + bilangan.join(", ") + ")</b><br>";
-  html += "Faktorisasi prima:<br>";
-  bilangan.forEach(function(b, i) {
-    var f = faktorisasiList[i];
-    var str = Object.keys(f).map(function(p) {
-      return f[p] > 1 ? p + "^" + f[p] : p;
-    }).join(" × ");
-    html += "  " + b + " = " + str + "<br>";
-  });
-  html += "<br>FPB = " + (langkahFPB.length > 0 ? langkahFPB.join(" × ") : "1") + " = " + fpb;
-  
-  out.innerHTML = html;
-  return true;
-}
+
 
 // --- KONVERSI BASIS ---
 if (lower.startsWith("ke biner")) {
