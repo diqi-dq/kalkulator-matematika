@@ -162,7 +162,7 @@ var daftarPerintah = [
   { kategori: "Statistik", nama: "Ukuran sampel", format: "ukuran sampel <margin>; <std>; <tingkat>", contoh: "ukuran sampel 5; 15; 0,95", ket: "Ukuran sampel minimum." },
   { kategori: "Statistik", nama: "Margin kesalahan", format: "margin kesalahan <std>; <n>; <tingkat>", contoh: "margin kesalahan 15; 30; 0,95", ket: "Margin of error." },
   { kategori: "Statistik", nama: "Regresi linier", format: "regresi linier <x> ; <y>", contoh: "regresi linier 1,2,3,4,5 ; 2,4,5,4,5", ket: "Regresi linier sederhana (OLS)." },
-  { kategori: "Statistik", nama: "Distribusi Beta", format: "distribusi beta <x>; <alpha>; <beta>", contoh: "distribusi beta 0,5; 2; 3", ket: "PDF distribusi Beta." }
+  { kategori: "Statistik", nama: "Distribusi Beta", format: "distribusi beta <x>; <alpha>; <beta>", contoh: "distribusi beta 0,5; 2; 3", ket: "PDF distribusi Beta." },
 
 // ========== SUHU ==========
 { kategori: "Konversi", nama: "Celsius ke Fahrenheit", format: "celsius ke fahrenheit <c>", contoh: "celsius ke fahrenheit 100", ket: "Konversi suhu dari Celsius ke Fahrenheit." },
